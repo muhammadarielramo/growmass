@@ -66,6 +66,16 @@ export function generateProjectStages(recipe, targetQuantity = 1000) {
     return recipe.stages.map((s) => ({ ...s, completed: false }));
   }
 
+  if (recipe && Array.isArray(recipe.splices) && recipe.splices.length > 0) {
+    return recipe.splices.map((sp, idx) => ({
+      id: `stage-${Date.now()}-${idx + 1}`,
+      title: `${idx + 1}. ${sp.branch || `Membuat ${sp.result || "Item"}`}`,
+      description: `• Splicing ${sp.itemA || "?"} + ${sp.itemB || "?"} → ${sp.result || "?"}`,
+      completed: false,
+      notes: ""
+    }));
+  }
+
   const stages = [
     {
       id: "stage-1-cactus",

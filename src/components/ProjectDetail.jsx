@@ -18,7 +18,8 @@ import {
   Sparkles,
   TrendingUp,
   Package,
-  Coins
+  Coins,
+  FileText
 } from "lucide-react";
 
 export function ProjectDetail({ onBack }) {
