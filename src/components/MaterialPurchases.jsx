@@ -186,6 +186,7 @@ export function MaterialPurchases({ project }) {
           <thead>
             <tr>
               <th style={{ width: "40px" }}>No</th>
+              <th style={{ width: "110px" }}>Tanggal</th>
               <th>Nama Bahan / Item</th>
               <th style={{ textAlign: "right" }}>Jumlah Beli (Qty)</th>
               <th>Rate / Harga Beli</th>
@@ -204,19 +205,19 @@ export function MaterialPurchases({ project }) {
               return (
                 <tr key={mat.id || idx}>
                   <td style={{ color: "var(--text-dim)" }}>{idx + 1}</td>
+                  <td style={{ color: "var(--text-muted)", fontSize: "12px", whiteSpace: "nowrap" }}>
+                    {formatDateGMT7(mat.date)}
+                  </td>
                   <td>
                     <div>
                       <div style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "14px" }}>
                         {mat.name}
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-dim)", marginTop: "2px" }}>
-                        {mat.date && (
-                          <span>📅 {formatDateGMT7(mat.date)}</span>
-                        )}
-                        {mat.notes && (
-                          <span>• {mat.notes}</span>
-                        )}
-                      </div>
+                      {mat.notes && (
+                        <div style={{ fontSize: "11px", color: "var(--text-dim)", marginTop: "2px" }}>
+                          • {mat.notes}
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td style={{ textAlign: "right", fontWeight: "700" }} className="font-mono">
@@ -269,20 +270,16 @@ export function MaterialPurchases({ project }) {
           </tbody>
           <tfoot>
             <tr style={{ background: "var(--bg-surface-elevated)", fontWeight: "800", borderTop: "2px solid var(--border-medium)" }}>
-              <td colSpan="3" style={{ padding: "14px 16px", color: "var(--text-main)" }}>
-                TOTAL KESELURUHAN PENGADAAN BAHAN ({materials.length} Item)
+              <td colSpan="6" style={{ padding: "14px 16px", color: "var(--text-main)", letterSpacing: "0.02em" }}>
+                TOTAL REKAPAN BELANJA BAHAN
               </td>
-              <td style={{ textAlign: "right", padding: "14px 16px" }} className="font-mono">
-                {totalQuantitySum.toLocaleString()}
-              </td>
-              <td colSpan="2"></td>
               <td style={{ textAlign: "right", padding: "14px 16px", color: "var(--amber-400)", fontSize: "15px" }} className="font-mono">
                 {formatLocks(totalSpendWL)}
               </td>
               <td style={{ textAlign: "right", padding: "14px 16px", color: "var(--emerald-400)", fontSize: "14px" }} className="font-mono">
                 {formatIDR(totalSpendIDR)}
               </td>
-              <td></td>
+              <td style={{ padding: "14px 16px" }}></td>
             </tr>
           </tfoot>
         </table>
