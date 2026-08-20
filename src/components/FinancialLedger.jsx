@@ -99,7 +99,6 @@ export function FinancialLedger({ project }) {
   const handleOpenAddMaterial = () => {
     setEditingMatId(null);
     setMatName("");
-    setMatCategory("Bibit Dasar");
     setMatBranch("");
     setMatQuantity("");
     setMatRateType("total_wl");
