@@ -179,8 +179,8 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
                     borderRadius: "var(--radius-md)",
                     background: "var(--bg-surface)",
                     display: "grid",
-                    gridTemplateColumns: "auto 2fr 1.2fr 1fr auto",
-                    gap: "10px",
+                    gridTemplateColumns: "auto 2fr 1fr auto",
+                    gap: "12px",
                     alignItems: "center",
                     position: "relative",
                     zIndex: (requirements.length - idx) * 10
@@ -228,24 +228,6 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
                       placeholder="Misal: 10200"
                       required
                     />
-                  </div>
-
-                  {/* Satuan / Unit */}
-                  <div>
-                    <label className="form-label" style={{ fontSize: "11px", marginBottom: "2px" }}>
-                      Satuan
-                    </label>
-                    <select
-                      value={req.unit || "pcs"}
-                      onChange={(e) => handleUpdateField(req.id, "unit", e.target.value)}
-                      className="form-select"
-                      style={{ fontSize: "12px" }}
-                    >
-                      <option value="pcs">pcs (biji)</option>
-                      <option value="seed">seed</option>
-                      <option value="block">block</option>
-                      <option value="pack">pack</option>
-                    </select>
                   </div>
 
                   {/* Delete Button */}

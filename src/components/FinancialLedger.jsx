@@ -446,7 +446,7 @@ export function FinancialLedger({ project }) {
                       {mat.branch || "-"}
                     </td>
                     <td style={{ textAlign: "right", fontWeight: "700" }} className="font-mono">
-                      {qty.toLocaleString()} {mat.unit || "pcs"}
+                      {qty.toLocaleString()}
                     </td>
                     <td>
                       <span className="badge badge-amber font-mono" style={{ fontSize: "12px" }}>
@@ -499,7 +499,7 @@ export function FinancialLedger({ project }) {
                   TOTAL REKAPAN BELANJA BAHAN ({materials.length} Item)
                 </td>
                 <td style={{ textAlign: "right", padding: "14px 16px" }} className="font-mono">
-                  {totalQuantitySum.toLocaleString()} pcs
+                  {totalQuantitySum.toLocaleString()}
                 </td>
                 <td colSpan="2"></td>
                 <td style={{ textAlign: "right", padding: "14px 16px", color: "var(--amber-400)", fontSize: "15px" }} className="font-mono">
@@ -677,7 +677,7 @@ export function FinancialLedger({ project }) {
                 </div>
 
                 {/* Resep Branch */}
-                <div className="form-group">
+                <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Cabang / Jalur Resep (Opsional)</label>
                   <input
                     type="text"
@@ -688,31 +688,18 @@ export function FinancialLedger({ project }) {
                   />
                 </div>
 
-                {/* Quantity & Unit */}
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Jumlah / Kuantitas Beli (Qty)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Misal: 18020"
-                      value={matQuantity}
-                      onChange={(e) => setMatQuantity(e.target.value)}
-                      className="form-input font-mono"
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Satuan</label>
-                    <input
-                      type="text"
-                      placeholder="pcs / seed"
-                      value={matUnit}
-                      onChange={(e) => setMatUnit(e.target.value)}
-                      className="form-input"
-                    />
-                  </div>
+                {/* Quantity */}
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Jumlah / Kuantitas Beli (Qty)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Misal: 18020"
+                    value={matQuantity}
+                    onChange={(e) => setMatQuantity(e.target.value)}
+                    className="form-input font-mono"
+                    required
+                  />
                 </div>
 
                 {/* Pricing / Rate Type Options */}

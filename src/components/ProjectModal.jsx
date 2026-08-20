@@ -124,34 +124,17 @@ export function ProjectModal({ isOpen, onClose, initialRecipe = null, presetReci
               />
             </div>
 
-            {/* Target Quantity (Optional) & Unit */}
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">Target Jumlah (Opsional / Kosongkan jika belum tahu)</label>
-                <input
-                  type="number"
-                  min="1"
-                  placeholder="Contoh: 6830 (Bisa diisi nanti)"
-                  value={targetQuantity}
-                  onChange={(e) => setTargetQuantity(e.target.value)}
-                  className="form-input font-mono"
-                />
-              </div>
-
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">Satuan</label>
-                <select
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  className="form-select"
-                >
-                  <option value="Seeds">Seeds</option>
-                  <option value="Blocks">Blocks</option>
-                  <option value="Items">Items</option>
-                  <option value="Trees">Trees</option>
-                  <option value="Packs">Packs</option>
-                </select>
-              </div>
+            {/* Target Quantity (Optional) */}
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">Target Jumlah / Qty (Opsional / Kosongkan jika belum tahu)</label>
+              <input
+                type="number"
+                min="1"
+                placeholder="Contoh: 6830 (Bisa diisi nanti)"
+                value={targetQuantity}
+                onChange={(e) => setTargetQuantity(e.target.value)}
+                className="form-input font-mono"
+              />
             </div>
 
             {/* Worlds Info */}

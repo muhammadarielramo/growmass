@@ -104,7 +104,7 @@ export function MaterialShortageTracker({ project, onRecordPurchaseFor = null })
             <span style={{ color: "var(--text-muted)" }}>
               Total Terpenuhi:{" "}
               <strong style={{ color: "var(--text-main)" }}>
-                {shortageAnalysis.totalPurchasedForTrackedSum.toLocaleString()} / {shortageAnalysis.totalTargetQtySum.toLocaleString()} pcs
+                {shortageAnalysis.totalPurchasedForTrackedSum.toLocaleString()} / {shortageAnalysis.totalTargetQtySum.toLocaleString()}
               </strong>
             </span>
             <span
@@ -119,7 +119,7 @@ export function MaterialShortageTracker({ project, onRecordPurchaseFor = null })
               {shortageAnalysis.overallPercentage}% Selesai
               {shortageAnalysis.totalShortageQtySum > 0 && (
                 <span style={{ color: "var(--rose-400)", marginLeft: "8px", fontWeight: "600" }}>
-                  (Kurang {shortageAnalysis.totalShortageQtySum.toLocaleString()} pcs lagi)
+                  (Kurang {shortageAnalysis.totalShortageQtySum.toLocaleString()} lagi)
                 </span>
               )}
             </span>
@@ -213,7 +213,7 @@ export function MaterialShortageTracker({ project, onRecordPurchaseFor = null })
                             className="badge badge-rose font-mono"
                             style={{ fontSize: "11px", fontWeight: "700", padding: "3px 8px" }}
                           >
-                            Kurang {item.shortageQuantity.toLocaleString()} {item.unit}
+                            Kurang {item.shortageQuantity.toLocaleString()}
                           </span>
                         ) : (
                           <span
@@ -228,7 +228,7 @@ export function MaterialShortageTracker({ project, onRecordPurchaseFor = null })
                           className="badge badge-neutral font-mono"
                           style={{ fontSize: "11px", padding: "3px 8px" }}
                         >
-                          {item.purchasedQuantity.toLocaleString()} {item.unit} (Terbeli)
+                          {item.purchasedQuantity.toLocaleString()} (Terbeli)
                         </span>
                       )}
                     </div>
@@ -246,7 +246,7 @@ export function MaterialShortageTracker({ project, onRecordPurchaseFor = null })
                     <div style={{ color: "var(--text-muted)" }}>
                       <span>Butuh: </span>
                       <strong style={{ color: "var(--amber-400)" }} className="font-mono">
-                        {hasTarget ? `${item.targetQuantity.toLocaleString()} ${item.unit}` : "-"}
+                        {hasTarget ? item.targetQuantity.toLocaleString() : "-"}
                       </strong>
                     </div>
 
@@ -258,7 +258,7 @@ export function MaterialShortageTracker({ project, onRecordPurchaseFor = null })
                         }}
                         className="font-mono"
                       >
-                        {item.purchasedQuantity.toLocaleString()} {item.unit}
+                        {item.purchasedQuantity.toLocaleString()}
                       </strong>
                     </div>
                   </div>
