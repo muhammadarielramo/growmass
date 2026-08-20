@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
+import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculator";
 import {
   exportMaterialsToCSV,
   exportMaterialsToXLSX,
