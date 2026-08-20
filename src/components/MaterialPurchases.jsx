@@ -5,7 +5,6 @@ import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculat
 import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import { getTodayGMT7, formatDateGMT7 } from "../utils/dateUtils";
 import { ItemAutocomplete } from "./ItemAutocomplete";
-import { ItemIcon } from "./ItemIcon";
 import {
   Package,
   PlusCircle,
@@ -207,12 +206,12 @@ export function MaterialPurchases({ project }) {
           ))}
         </div>
 
-        <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>
-          Didukung 850+ database item Growtopia resmi dengan auto-complete & ikon
-        </span>
+        <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+          Didukung 850+ database item Growtopia resmi dengan auto-complete cepat
+        </p>
       </div>
 
-      {/* Materials Table */}
+      {/* Main Material Purchases Table */}
       <div className="custom-table-wrapper">
         <table className="custom-table">
           <thead>
@@ -223,7 +222,7 @@ export function MaterialPurchases({ project }) {
               <th>Cabang Alur Resep</th>
               <th style={{ textAlign: "right" }}>Jumlah Beli (Qty)</th>
               <th>Rate / Harga Beli</th>
-              <th style={{ textAlign: "right" }}>Harga Satuan (WL)</th>
+              <th style={{ textAlign: "right" }}>Harga Satuan</th>
               <th style={{ textAlign: "right" }}>Total Biaya (WL)</th>
               <th style={{ textAlign: "right" }}>Estimasi Rupiah</th>
               <th style={{ textAlign: "right", width: "80px" }}>Aksi</th>
@@ -239,20 +238,17 @@ export function MaterialPurchases({ project }) {
                 <tr key={mat.id || idx}>
                   <td style={{ color: "var(--text-dim)" }}>{idx + 1}</td>
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <ItemIcon name={mat.name} size={30} />
-                      <div>
-                        <div style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "14px" }}>
-                          {mat.name}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-dim)", marginTop: "2px" }}>
-                          {mat.date && (
-                            <span>📅 {formatDateGMT7(mat.date)}</span>
-                          )}
-                          {mat.notes && (
-                            <span>• {mat.notes}</span>
-                          )}
-                        </div>
+                    <div>
+                      <div style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "14px" }}>
+                        {mat.name}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-dim)", marginTop: "2px" }}>
+                        {mat.date && (
+                          <span>📅 {formatDateGMT7(mat.date)}</span>
+                        )}
+                        {mat.notes && (
+                          <span>• {mat.notes}</span>
+                        )}
                       </div>
                     </div>
                   </td>

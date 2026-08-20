@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import growtopiaItems from "../data/growtopiaItems.json";
-import { ItemIcon, getItemData } from "./ItemIcon";
 import { Search, ChevronDown, Check, Sparkles } from "lucide-react";
 
 export function ItemAutocomplete({
@@ -50,8 +49,6 @@ export function ItemAutocomplete({
     return matches.slice(0, 40);
   }, [query]);
 
-  const selectedItemData = getItemData(query);
-
   const handleSelect = (item) => {
     setQuery(item.name);
     onChange(item.name, item);
@@ -61,16 +58,17 @@ export function ItemAutocomplete({
   const handleInputChange = (e) => {
     const val = e.target.value;
     setQuery(val);
-    onChange(val, getItemData(val));
+    const matched = growtopiaItems.find((i) => i.name.toLowerCase() === val.toLowerCase().trim());
+    onChange(val, matched || { name: val });
     setIsOpen(true);
   };
 
   return (
     <div ref={wrapperRef} style={{ position: "relative", width: "100%", ...style }}>
       <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-        {/* Item Icon Preview inside input */}
-        <div style={{ position: "absolute", left: "10px", display: "flex", alignItems: "center", pointerEvents: "none", zIndex: 2 }}>
-          <ItemIcon name={query} size={22} />
+        {/* Search icon inside input */}
+        <div style={{ position: "absolute", left: "12px", display: "flex", alignItems: "center", pointerEvents: "none", zIndex: 2 }}>
+          <Search size={16} color="var(--text-dim)" />
         </div>
 
         <input
@@ -157,8 +155,7 @@ export function ItemAutocomplete({
                       if (!isCurrent) e.currentTarget.style.background = "transparent";
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <ItemIcon name={item.name} image={item.image} size={24} />
+                    <div style={{ display: "flex", alignItems: "center" }}>
                       <span style={{ fontSize: "13px", fontWeight: isCurrent ? "700" : "600", color: isCurrent ? "var(--emerald-400)" : "var(--text-main)" }}>
                         {item.name}
                       </span>

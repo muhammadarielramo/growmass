@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
-import { ItemIcon } from "./ItemIcon";
 import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculator";
 import {
   GitFork,
@@ -305,16 +304,13 @@ export function SplicingTree({ project }) {
               <span className="badge badge-neutral">{splices.length} Pasangan Splice</span>
             </div>
             
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <ItemIcon name={project.targetItem || "Science Station"} size={36} />
-              <div>
-                <h2 style={{ fontSize: "20px", fontWeight: "800", margin: 0 }}>
-                  Formula & Modal Splicing: {project.targetItem || project.name}
-                </h2>
-                <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px", margin: 0 }}>
-                  Input jumlah & harga beli Bahan A + Bahan B $\rightarrow$ Menghasilkan berapa Hasil X (Otomatis masuk rekapan modal).
-                </p>
-              </div>
+            <div>
+              <h2 style={{ fontSize: "20px", fontWeight: "800", margin: 0 }}>
+                Formula & Modal Splicing: {project.targetItem || project.name}
+              </h2>
+              <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px", margin: 0 }}>
+                Input jumlah & harga beli Bahan A + Bahan B → Menghasilkan berapa Hasil X (Otomatis masuk rekapan modal).
+              </p>
             </div>
           </div>
 
@@ -431,7 +427,6 @@ export function SplicingTree({ project }) {
                     }}>
                       {/* Ingredient A */}
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", minWidth: 0 }}>
-                        <ItemIcon name={sp.itemA} size={32} style={{ marginBottom: "4px" }} />
                         <div style={{ fontSize: "12px", fontWeight: "700", color: "var(--cyan-300)", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>
                           {sp.itemA}
                         </div>
@@ -456,7 +451,6 @@ export function SplicingTree({ project }) {
 
                       {/* Ingredient B */}
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", minWidth: 0 }}>
-                        <ItemIcon name={sp.itemB} size={32} style={{ marginBottom: "4px" }} />
                         <div style={{ fontSize: "12px", fontWeight: "700", color: "var(--purple-300)", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>
                           {sp.itemB}
                         </div>
@@ -481,7 +475,6 @@ export function SplicingTree({ project }) {
 
                       {/* Result X */}
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", minWidth: 0 }}>
-                        <ItemIcon name={sp.result} size={36} style={{ marginBottom: "4px" }} />
                         <div style={{ fontSize: "13px", fontWeight: "800", color: "var(--emerald-400)", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>
                           {sp.result}
                         </div>

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
-import { ItemIcon } from "./ItemIcon";
 import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculator";
 import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import { getTodayGMT7, formatDateGMT7 } from "../utils/dateUtils";
@@ -430,20 +429,17 @@ export function FinancialLedger({ project }) {
                   <tr key={mat.id || idx}>
                     <td style={{ color: "var(--text-dim)" }}>{idx + 1}</td>
                     <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <ItemIcon name={mat.name} size={30} />
-                        <div>
-                          <div style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "14px" }}>
-                            {mat.name}
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-dim)", marginTop: "2px" }}>
-                            {mat.date && (
-                              <span>📅 {formatDateGMT7(mat.date)}</span>
-                            )}
-                            {mat.notes && (
-                              <span>• {mat.notes}</span>
-                            )}
-                          </div>
+                      <div>
+                        <div style={{ fontWeight: "700", color: "var(--text-main)", fontSize: "14px" }}>
+                          {mat.name}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-dim)", marginTop: "2px" }}>
+                          {mat.date && (
+                            <span>📅 {formatDateGMT7(mat.date)}</span>
+                          )}
+                          {mat.notes && (
+                            <span>• {mat.notes}</span>
+                          )}
                         </div>
                       </div>
                     </td>

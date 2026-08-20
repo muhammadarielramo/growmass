@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { useCurrency } from "../context/CurrencyContext";
-import { ItemIcon } from "./ItemIcon";
 import { formatStatusKey, formatStatusLabel, PROJECT_STATUSES } from "../utils/statusUtils";
 import {
   TrendingUp,
@@ -337,9 +336,8 @@ export function AnalyticsDashboard({ onSelectProject, onNewProject, onOpenCatalo
                       </span>
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                      <ItemIcon name={project.targetItem || project.name} size={30} />
-                      <h3 style={{ fontSize: "17px", fontWeight: "700", margin: 0 }}>
+                    <div style={{ marginBottom: "8px" }}>
+                      <h3 style={{ fontSize: "17px", fontWeight: "700", margin: 0, color: "var(--text-main)" }}>
                         {project.name}
                       </h3>
                     </div>

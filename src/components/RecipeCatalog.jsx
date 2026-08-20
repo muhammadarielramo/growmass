@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { DEFAULT_RECIPES } from "../data/defaultRecipes";
-import { ItemIcon } from "./ItemIcon";
 import {
   BookOpen,
   Search,
@@ -36,14 +35,11 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
             background: "var(--bg-glass-card)",
             border: "1px solid var(--border-medium)"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-              <ItemIcon name={activeRecipeDetail.name} size={36} />
-              <div>
-                <span className="badge badge-emerald" style={{ marginBottom: "4px" }}>
-                  {activeRecipeDetail.category}
-                </span>
-                <h2 style={{ fontSize: "22px", fontWeight: "800", margin: 0 }}>{activeRecipeDetail.name}</h2>
-              </div>
+            <div style={{ marginBottom: "8px" }}>
+              <span className="badge badge-emerald" style={{ marginBottom: "4px" }}>
+                {activeRecipeDetail.category}
+              </span>
+              <h2 style={{ fontSize: "22px", fontWeight: "800", margin: 0 }}>{activeRecipeDetail.name}</h2>
             </div>
 
             <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>
@@ -62,30 +58,21 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
               Formula Splicing Akhir (Final Combination)
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <ItemIcon name={activeRecipeDetail.recipeA} size={28} />
-                <span className="badge badge-cyan" style={{ fontSize: "13px", padding: "6px 12px" }}>
-                  {activeRecipeDetail.recipeA} Seed
-                </span>
-              </div>
+              <span className="badge badge-cyan" style={{ fontSize: "13px", padding: "6px 12px" }}>
+                {activeRecipeDetail.recipeA} Seed
+              </span>
 
               <span style={{ fontSize: "18px", fontWeight: "800", color: "var(--emerald-400)" }}>+</span>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <ItemIcon name={activeRecipeDetail.recipeB} size={28} />
-                <span className="badge badge-purple" style={{ fontSize: "13px", padding: "6px 12px" }}>
-                  {activeRecipeDetail.recipeB} Seed
-                </span>
-              </div>
+              <span className="badge badge-purple" style={{ fontSize: "13px", padding: "6px 12px" }}>
+                {activeRecipeDetail.recipeB} Seed
+              </span>
 
               <ArrowRight size={18} color="var(--emerald-400)" />
 
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <ItemIcon name={activeRecipeDetail.name} size={30} />
-                <span className="badge badge-emerald" style={{ fontSize: "13px", padding: "6px 12px", fontWeight: "800" }}>
-                  {activeRecipeDetail.name} Seed
-                </span>
-              </div>
+              <span className="badge badge-emerald" style={{ fontSize: "13px", padding: "6px 12px", fontWeight: "800" }}>
+                {activeRecipeDetail.name} Seed
+              </span>
             </div>
           </div>
 
@@ -114,15 +101,12 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
                       {sp.branch}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
-                      <ItemIcon name={sp.itemA} size={20} />
-                      <span style={{ fontSize: "12px", fontWeight: "600" }}>{sp.itemA}</span>
+                      <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--cyan-300)" }}>{sp.itemA}</span>
                       <span style={{ color: "var(--text-dim)" }}>+</span>
-                      <ItemIcon name={sp.itemB} size={20} />
-                      <span style={{ fontSize: "12px", fontWeight: "600" }}>{sp.itemB}</span>
+                      <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--purple-300)" }}>{sp.itemB}</span>
                     </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <ItemIcon name={sp.result} size={24} />
+                  <div>
                     <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--emerald-400)" }}>
                       {sp.result}
                     </span>

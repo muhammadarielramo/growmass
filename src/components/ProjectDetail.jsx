@@ -4,7 +4,6 @@ import { useCurrency } from "../context/CurrencyContext";
 import { FinancialLedger } from "./FinancialLedger";
 import { StageTracker } from "./StageTracker";
 import { SplicingTree } from "./SplicingTree";
-import { ItemIcon } from "./ItemIcon";
 import { formatStatusKey, formatStatusLabel } from "../utils/statusUtils";
 import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import {
@@ -191,8 +190,7 @@ export function ProjectDetail({ onBack }) {
                 </button>
               </div>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <ItemIcon name={activeProject.targetItem || activeProject.name} size={36} />
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <h1 style={{ fontSize: "24px", fontWeight: "800", margin: 0 }}>
                   {activeProject.name}
                 </h1>
