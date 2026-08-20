@@ -64,7 +64,15 @@ export function ItemAutocomplete({
   };
 
   return (
-    <div ref={wrapperRef} style={{ position: "relative", width: "100%", ...style }}>
+    <div
+      ref={wrapperRef}
+      style={{
+        position: "relative",
+        width: "100%",
+        zIndex: isOpen ? 999 : 1,
+        ...style
+      }}
+    >
       <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
         {/* Search icon inside input */}
         <div style={{ position: "absolute", left: "12px", display: "flex", alignItems: "center", pointerEvents: "none", zIndex: 2 }}>
@@ -119,10 +127,10 @@ export function ItemAutocomplete({
             background: "var(--bg-surface-elevated)",
             border: "1px solid var(--border-medium)",
             borderRadius: "var(--radius-md)",
-            boxShadow: "var(--shadow-lg)",
-            maxHeight: "260px",
+            boxShadow: "0 12px 32px -4px rgba(0, 0, 0, 0.7), 0 4px 12px -2px rgba(0, 0, 0, 0.5)",
+            maxHeight: "250px",
             overflowY: "auto",
-            zIndex: 1000,
+            zIndex: 9999,
             animation: "fadeIn 0.15s ease-out"
           }}
         >

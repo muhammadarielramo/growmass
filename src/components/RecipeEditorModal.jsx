@@ -316,12 +316,13 @@ export function RecipeEditorModal({ isOpen, onClose, initialRecipe = null, onSav
                 {splices.map((splice, idx) => (
                   <div
                     key={splice.id}
-                    className="glass-card"
                     style={{
                       padding: "12px",
                       border: "1px solid var(--border-subtle)",
                       borderRadius: "var(--radius-md)",
-                      background: "var(--bg-surface)"
+                      background: "var(--bg-surface)",
+                      position: "relative",
+                      zIndex: (splices.length - idx) * 10
                     }}
                   >
                     <div

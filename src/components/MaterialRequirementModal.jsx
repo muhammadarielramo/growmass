@@ -173,7 +173,6 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
               {requirements.map((req, idx) => (
                 <div
                   key={req.id}
-                  className="glass-card"
                   style={{
                     padding: "12px 14px",
                     border: "1px solid var(--border-subtle)",
@@ -182,7 +181,9 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
                     display: "grid",
                     gridTemplateColumns: "auto 2fr 1.2fr 1fr auto",
                     gap: "10px",
-                    alignItems: "center"
+                    alignItems: "center",
+                    position: "relative",
+                    zIndex: (requirements.length - idx) * 10
                   }}
                 >
                   <span
