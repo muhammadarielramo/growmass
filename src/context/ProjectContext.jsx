@@ -324,6 +324,71 @@ export function ProjectProvider({ children }) {
     );
   };
 
+  // Material Requirements & Target Customization
+  const updateMaterialRequirements = (projectId, requirementsList) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== projectId) return p;
+        return {
+          ...p,
+          materialRequirements: Array.isArray(requirementsList) ? requirementsList : [],
+          updatedAt: new Date().toISOString()
+        };
+      })
+    );
+  };
+
+  const setMaterialTarget = (projectId, itemName, targetQuantity, unit = "pcs", branch = "-", notes = "") => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== projectId) return p;
+        const currentReqs = Array.isArray(p.materialRequirements) ? [...p.materialRequirements] : [];
+        const existingIdx = currentReqs.findIndex(
+          (r) => r.name.toLowerCase().trim() === itemName.toLowerCase().trim()
+        );
+
+        if (existingIdx >= 0) {
+          currentReqs[existingIdx] = {
+            ...currentReqs[existingIdx],
+            targetQuantity: Number(targetQuantity || 0),
+            unit: unit || currentReqs[existingIdx].unit || "pcs",
+            branch: branch !== "-" ? branch : currentReqs[existingIdx].branch,
+            notes: notes || currentReqs[existingIdx].notes
+          };
+        } else {
+          currentReqs.push({
+            id: `req-${Date.now()}-${currentReqs.length + 1}`,
+            name: itemName.trim(),
+            targetQuantity: Number(targetQuantity || 0),
+            unit: unit || "pcs",
+            branch: branch || "-",
+            notes: notes || ""
+          });
+        }
+
+        return {
+          ...p,
+          materialRequirements: currentReqs,
+          updatedAt: new Date().toISOString()
+        };
+      })
+    );
+  };
+
+  const deleteMaterialRequirement = (projectId, reqId) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== projectId) return p;
+        const currentReqs = Array.isArray(p.materialRequirements) ? p.materialRequirements : [];
+        return {
+          ...p,
+          materialRequirements: currentReqs.filter((r) => r.id !== reqId),
+          updatedAt: new Date().toISOString()
+        };
+      })
+    );
+  };
+
   // Recipe Management (Add / Edit / Delete / Reset)
   const addRecipe = (recipeData) => {
     const newRecipe = {
@@ -433,6 +498,9 @@ export function ProjectProvider({ children }) {
     addMaterial,
     updateMaterial,
     deleteMaterial,
+    updateMaterialRequirements,
+    setMaterialTarget,
+    deleteMaterialRequirement,
     addRecipe,
     updateRecipe,
     deleteRecipe,

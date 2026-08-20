@@ -5,6 +5,7 @@ import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculat
 import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import { getTodayGMT7, formatDateGMT7 } from "../utils/dateUtils";
 import { ItemAutocomplete } from "./ItemAutocomplete";
+import { MaterialShortageTracker } from "./MaterialShortageTracker";
 import {
   Package,
   PlusCircle,
@@ -173,6 +174,9 @@ export function MaterialPurchases({ project }) {
           </div>
         </div>
       </div>
+
+      {/* Tracking Kebutuhan & Kekurangan Bahan */}
+      <MaterialShortageTracker project={project} />
 
       {/* Main Material Purchases Table */}
       <div className="custom-table-wrapper">

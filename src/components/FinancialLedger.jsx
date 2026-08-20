@@ -5,6 +5,7 @@ import { ItemAutocomplete } from "./ItemAutocomplete";
 import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculator";
 import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import { getTodayGMT7, formatDateGMT7 } from "../utils/dateUtils";
+import { MaterialShortageTracker } from "./MaterialShortageTracker";
 import {
   Wallet,
   TrendingUp,
@@ -297,6 +298,9 @@ export function FinancialLedger({ project }) {
           </div>
         </div>
       </div>
+
+      {/* Tracking Kebutuhan & Kekurangan Bahan */}
+      <MaterialShortageTracker project={project} />
 
       {/* Main Header with Action & Export Buttons */}
       <div className="glass-card" style={{
