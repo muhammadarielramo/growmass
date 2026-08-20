@@ -157,7 +157,11 @@ export function Header({ onOpenNewProject, onOpenCatalog, onOpenSettings, onGoHo
           border: "1px solid var(--border-subtle)",
           fontSize: "12px"
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div
+            onClick={onOpenSettings}
+            title="Klik untuk ubah kurs Rate DL"
+            style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}
+          >
             <span style={{ color: "var(--text-dim)" }}>Rate DL:</span>
             <span style={{ color: "var(--amber-400)", fontWeight: "700" }} className="font-mono">
               Rp {config.idrPerDl.toLocaleString("id-ID")}

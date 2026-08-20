@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCurrency } from "../context/CurrencyContext";
 import { useProjects } from "../context/ProjectContext";
 import {
@@ -15,17 +15,24 @@ export function SettingsModal({ isOpen, onClose }) {
   const { config, updateConfig } = useCurrency();
   const { exportData, importData } = useProjects();
 
-  const [idrRate, setIdrRate] = useState(config.idrPerDl.toString());
+  const [idrRate, setIdrRate] = useState(config?.idrPerDl?.toString() || "3500");
   const [importStatus, setImportStatus] = useState(null);
+
+  // Sync state whenever modal opens or config changes
+  useEffect(() => {
+    if (config?.idrPerDl !== undefined && config?.idrPerDl !== null) {
+      setIdrRate(config.idrPerDl.toString());
+    }
+  }, [config?.idrPerDl, isOpen]);
 
   if (!isOpen) return null;
 
   const handleSaveRates = (e) => {
     e.preventDefault();
     const rateNum = Number(idrRate);
-    if (rateNum > 0) {
+    if (!isNaN(rateNum) && rateNum > 0) {
       updateConfig({ idrPerDl: rateNum });
-      setImportStatus({ type: "success", text: "Rate kurs berhasil diperbarui!" });
+      setImportStatus({ type: "success", text: `Rate kurs berhasil diperbarui: Rp ${rateNum.toLocaleString("id-ID")} / DL` });
       setTimeout(() => setImportStatus(null), 3000);
     }
   };
@@ -97,12 +104,13 @@ export function SettingsModal({ isOpen, onClose }) {
                   </span>
                   <input
                     type="number"
-                    min="100"
-                    step="50"
+                    min="1"
+                    step="any"
                     value={idrRate}
                     onChange={(e) => setIdrRate(e.target.value)}
                     className="form-input font-mono"
                     style={{ paddingLeft: "42px", fontSize: "16px", fontWeight: "700", color: "var(--amber-400)" }}
+                    placeholder="Contoh: 3500, 3420, 3125, dll."
                     required
                   />
                 </div>
