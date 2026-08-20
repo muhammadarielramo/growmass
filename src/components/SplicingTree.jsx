@@ -529,7 +529,7 @@ export function SplicingTree({ project }) {
       {/* Add / Edit Splice Modal with Direct WL Value input options */}
       {showAddSpliceModal && (
         <div className="modal-overlay" onClick={() => setShowAddSpliceModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "660px", maxHeight: "90vh", overflowY: "auto" }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "660px" }}>
             <div className="modal-header">
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <GitFork size={20} color="var(--purple-400)" />

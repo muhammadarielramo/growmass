@@ -20,7 +20,7 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "800px", maxHeight: "85vh" }}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "800px" }}>
         <div className="modal-header">
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <BookOpen size={20} color="var(--emerald-400)" />

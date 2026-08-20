@@ -478,8 +478,10 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 20px 16px;
   animation: fadeIn 0.2s ease-out;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modal-content {
@@ -488,26 +490,43 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-lg);
   max-width: 650px;
   width: 100%;
-  max-height: 90vh;
+  max-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: auto;
+  position: relative;
+}
+
+/* Ensure forms inside modal-content behave as proper flex containers */
+.modal-content > form,
+.modal-content form.modal-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .modal-header {
-  padding: 20px 24px;
+  padding: 18px 24px;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 20px 24px;
   overflow-y: auto;
-  flex: 1;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-footer {
@@ -517,6 +536,26 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: flex-end;
   gap: 12px;
   background: var(--bg-surface-elevated);
+  flex-shrink: 0;
+}
+
+/* Modal Scrollbar Styling */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--emerald-500);
 }
 
 /* Tables */
