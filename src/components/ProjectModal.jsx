@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
@@ -11,11 +11,13 @@ import {
   MapPin
 } from "lucide-react";
 
-export function ProjectModal({ isOpen, onClose, initialRecipe = null }) {
+export function ProjectModal({ isOpen, onClose, initialRecipe = null, presetRecipe = null }) {
   const { createProject } = useProjects();
   const { config, idrToWl, wlToIdr, formatLocks, formatIDR } = useCurrency();
 
-  const [itemName, setItemName] = useState(initialRecipe?.name || "Science Station");
+  const selectedPreset = presetRecipe || initialRecipe;
+
+  const [itemName, setItemName] = useState(selectedPreset?.name || "Science Station");
   const [projectName, setProjectName] = useState("");
   const [targetQuantity, setTargetQuantity] = useState(""); // Optional
   const [unit, setUnit] = useState("Seeds");
@@ -26,6 +28,18 @@ export function ProjectModal({ isOpen, onClose, initialRecipe = null }) {
   // Initial Capital
   const [capitalMode, setCapitalMode] = useState("DL"); // 'WL', 'DL', 'BGL', 'IDR'
   const [capitalAmount, setCapitalAmount] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      if (selectedPreset) {
+        setItemName(selectedPreset.name || "Science Station");
+        setProjectName(`Massing ${selectedPreset.name || "Science Station"}`);
+      } else {
+        setItemName("Science Station");
+        setProjectName("Massing Science Station");
+      }
+    }
+  }, [isOpen, selectedPreset]);
 
   if (!isOpen) return null;
 
@@ -53,11 +67,13 @@ export function ProjectModal({ isOpen, onClose, initialRecipe = null }) {
       storageWorld: storageWorld.trim().toUpperCase(),
       notes: notes.trim(),
       recipe: {
-        id: `custom_${Date.now()}`,
+        id: selectedPreset?.id || `custom_${Date.now()}`,
         name: targetItemClean,
         category: "Mass Project",
-        description: `Projek massing ${targetItemClean}`,
-        splices: initialRecipe?.splices || []
+        description: selectedPreset?.description || `Projek massing ${targetItemClean}`,
+        recipeA: selectedPreset?.recipeA || "",
+        recipeB: selectedPreset?.recipeB || "",
+        splices: selectedPreset?.splices || []
       },
       initialCapitalWL: finalCapitalWL,
       capitalSource: capitalMode

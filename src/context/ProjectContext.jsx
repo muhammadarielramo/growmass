@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import {
   loadProjectsFromStorage,
   saveProjectsToStorage,
+  loadRecipesFromStorage,
+  saveRecipesToStorage,
   INITIAL_SAMPLE_PROJECTS
 } from "../utils/storage";
 import { generateProjectStages } from "../utils/recipeCalculator";
@@ -11,6 +12,7 @@ const ProjectContext = createContext(null);
 
 export function ProjectProvider({ children }) {
   const [projects, setProjects] = useState(loadProjectsFromStorage);
+  const [recipes, setRecipes] = useState(loadRecipesFromStorage);
   const [activeProjectId, setActiveProjectId] = useState(() => {
     const loaded = loadProjectsFromStorage();
     return loaded.length > 0 ? loaded[0].id : null;
@@ -19,6 +21,10 @@ export function ProjectProvider({ children }) {
   useEffect(() => {
     saveProjectsToStorage(projects);
   }, [projects]);
+
+  useEffect(() => {
+    saveRecipesToStorage(recipes);
+  }, [recipes]);
 
   const activeProject = useMemo(() => {
     return projects.find((p) => p.id === activeProjectId) || projects[0] || null;
@@ -317,12 +323,52 @@ export function ProjectProvider({ children }) {
     );
   };
 
-  // Export / Import
+  // Recipe Management (Add / Edit / Delete / Reset)
+  const addRecipe = (recipeData) => {
+    const newRecipe = {
+      id: `recipe-${Date.now()}`,
+      name: recipeData.name?.trim() || "Custom Recipe",
+      description: recipeData.description?.trim() || "",
+      recipeA: recipeData.recipeA?.trim() || "",
+      recipeB: recipeData.recipeB?.trim() || "",
+      splices: Array.isArray(recipeData.splices) ? recipeData.splices : [],
+      stages: Array.isArray(recipeData.stages) ? recipeData.stages : [],
+      createdAt: new Date().toISOString()
+    };
+    setRecipes((prev) => [newRecipe, ...prev]);
+    return newRecipe;
+  };
+
+  const updateRecipe = (recipeId, updates) => {
+    setRecipes((prev) =>
+      prev.map((r) =>
+        r.id === recipeId
+          ? {
+              ...r,
+              ...updates,
+              updatedAt: new Date().toISOString()
+            }
+          : r
+      )
+    );
+  };
+
+  const deleteRecipe = (recipeId) => {
+    setRecipes((prev) => prev.filter((r) => r.id !== recipeId));
+  };
+
+  const resetRecipes = () => {
+    setRecipes(DEFAULT_RECIPES);
+  };
+
+  // Backup and Export
   const exportData = () => {
     const exportObject = {
+      app: "Growmass",
       version: "1.0",
       exportDate: new Date().toISOString(),
-      projects
+      projects,
+      recipes
     };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObject, null, 2));
     const downloadAnchor = document.createElement("a");
@@ -343,6 +389,9 @@ export function ProjectProvider({ children }) {
         setProjects(parsed.projects);
         if (parsed.projects.length > 0) {
           setActiveProjectId(parsed.projects[0].id);
+        }
+        if (parsed.recipes && Array.isArray(parsed.recipes)) {
+          setRecipes(parsed.recipes);
         }
         return { success: true, message: `Berhasil mengimpor ${parsed.projects.length} projek!` };
       } else if (Array.isArray(parsed)) {
@@ -365,6 +414,7 @@ export function ProjectProvider({ children }) {
 
   const value = {
     projects,
+    recipes,
     activeProjectId,
     activeProject,
     globalStats,
@@ -382,6 +432,10 @@ export function ProjectProvider({ children }) {
     addMaterial,
     updateMaterial,
     deleteMaterial,
+    addRecipe,
+    updateRecipe,
+    deleteRecipe,
+    resetRecipes,
     exportData,
     importData,
     resetToSample

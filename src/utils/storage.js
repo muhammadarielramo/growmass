@@ -4,11 +4,13 @@
  * and exact standardized item names as requested.
  */
 import { getTodayGMT7 } from "./dateUtils";
+import { DEFAULT_RECIPES } from "../data/defaultRecipes";
 
 const STORAGE_KEYS = {
   PROJECTS: "growmass_projects",
   CURRENCY_CONFIG: "growmass_currency_config",
   ACTIVE_PROJECT_ID: "growmass_active_project_id",
+  RECIPES: "growmass_custom_recipes"
 };
 
 const todayGMT7 = getTodayGMT7();
@@ -552,5 +554,28 @@ export function saveCurrencyConfigToStorage(config) {
     localStorage.setItem(STORAGE_KEYS.CURRENCY_CONFIG, JSON.stringify(config));
   } catch (err) {
     console.error("Failed to save currency config", err);
+  }
+}
+
+export function loadRecipesFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.RECIPES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load recipes from storage", err);
+  }
+  return DEFAULT_RECIPES;
+}
+
+export function saveRecipesToStorage(recipes) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.RECIPES, JSON.stringify(recipes));
+  } catch (err) {
+    console.error("Failed to save recipes to storage", err);
   }
 }
