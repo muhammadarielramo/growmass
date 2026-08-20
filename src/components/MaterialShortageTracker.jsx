@@ -194,15 +194,6 @@ export function MaterialShortageTracker({ project, onRecordPurchaseFor = null })
                       >
                         {item.name}
                       </div>
-                      <div
-                        style={{
-                          fontSize: "11px",
-                          color: "var(--text-dim)",
-                          marginTop: "2px"
-                        }}
-                      >
-                        {item.branch !== "-" ? item.branch : "Kebutuhan Projek"}
-                      </div>
                     </div>
 
                     {/* Shortage Status Badge */}

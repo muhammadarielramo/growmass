@@ -409,7 +409,6 @@ export function FinancialLedger({ project }) {
               <tr>
                 <th style={{ width: "40px" }}>No</th>
                 <th>Nama Bahan / Item</th>
-                <th>Cabang Alur Resep</th>
                 <th style={{ textAlign: "right" }}>Jumlah Beli (Qty)</th>
                 <th>Rate / Harga Beli</th>
                 <th style={{ textAlign: "right" }}>Harga Satuan</th>
@@ -441,9 +440,6 @@ export function FinancialLedger({ project }) {
                           )}
                         </div>
                       </div>
-                    </td>
-                    <td style={{ color: "var(--cyan-300)", fontSize: "12px", fontWeight: "500" }}>
-                      {mat.branch || "-"}
                     </td>
                     <td style={{ textAlign: "right", fontWeight: "700" }} className="font-mono">
                       {qty.toLocaleString()}
@@ -673,18 +669,6 @@ export function FinancialLedger({ project }) {
                     placeholder="Cari item Growtopia..."
                     required
                     autoFocus
-                  />
-                </div>
-
-                {/* Resep Branch */}
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label className="form-label">Cabang / Jalur Resep (Opsional)</label>
-                  <input
-                    type="text"
-                    placeholder="Misal: Cabang Toxic Waste Barrel atau Death Spikes"
-                    value={matBranch}
-                    onChange={(e) => setMatBranch(e.target.value)}
-                    className="form-input"
                   />
                 </div>
 
