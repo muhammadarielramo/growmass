@@ -601,37 +601,42 @@ h1, h2, h3, h4, h5, h6 {
 /* Tabs */
 .tabs-nav {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 24px;
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding-bottom: 4px;
 }
 
 .tab-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 12px 18px;
+  padding: 12px 22px;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-muted);
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
 }
 
 .tab-btn:hover {
   color: var(--text-main);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .tab-btn.active {
   color: var(--emerald-400);
   border-bottom-color: var(--emerald-400);
+  background: rgba(16, 185, 129, 0.06);
 }
 
 /* Progress Bar */
