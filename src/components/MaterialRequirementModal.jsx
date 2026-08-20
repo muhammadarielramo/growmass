@@ -8,7 +8,6 @@ import {
   Trash2,
   Save,
   Sparkles,
-  RefreshCw,
   CheckCircle2,
   Info
 } from "lucide-react";
@@ -72,24 +71,6 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
     );
   };
 
-  const handleAutoFillFromProject = () => {
-    const autoReqs = generateDefaultRequirementsFromProject(project);
-    if (autoReqs.length > 0) {
-      setRequirements(
-        autoReqs.map((r, idx) => ({
-          id: r.id || `req-auto-${idx + 1}`,
-          name: r.name || "",
-          targetQuantity: r.targetQuantity || 1000,
-          unit: r.unit || "pcs",
-          branch: r.branch || "-",
-          notes: r.notes || ""
-        }))
-      );
-      setSuccessMsg("Berhasil memuat daftar bahan dari pohon resep & rekapan!");
-      setTimeout(() => setSuccessMsg(""), 3000);
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const cleanList = requirements
@@ -131,7 +112,7 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
             className="modal-body"
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            {/* Header Description & Auto-generate Action */}
+            {/* Header Description & Add Action */}
             <div
               style={{
                 display: "flex",
@@ -147,23 +128,12 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
                 </p>
               </div>
 
-              <div style={{ display: "flex", gap: "8px" }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={handleAutoFillFromProject}
-                  style={{ fontSize: "12px", padding: "6px 12px" }}
-                  title="Otomatis isi bahan dari data pembelian atau pohon resep projek"
-                >
-                  <RefreshCw size={13} />
-                  <span>Isi Otomatis dari Resep</span>
-                </button>
-
+              <div>
                 <button
                   type="button"
                   className="btn btn-primary"
                   onClick={handleAddRow}
-                  style={{ fontSize: "12px", padding: "6px 12px" }}
+                  style={{ fontSize: "12px", padding: "6px 14px" }}
                 >
                   <Plus size={14} />
                   <span>Tambah Bahan</span>
@@ -304,7 +274,7 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
                     fontSize: "13px"
                   }}
                 >
-                  Belum ada ketentuan target bahan. Klik <strong>"+ Tambah Bahan"</strong> atau <strong>"Isi Otomatis dari Resep"</strong>.
+                  Belum ada ketentuan target bahan. Klik <strong>"+ Tambah Bahan"</strong> untuk menentukan target bahan projek.
                 </div>
               )}
             </div>
