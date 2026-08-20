@@ -379,7 +379,7 @@ export function FinancialLedger({ project }) {
             style={{ fontSize: "12px", padding: "6px 12px" }}
           >
             <PlusCircle size={15} color="var(--purple-400)" />
-            <span>+ Setoran Modal</span>
+            <span>Setoran Modal</span>
           </button>
 
           <button
@@ -388,7 +388,7 @@ export function FinancialLedger({ project }) {
             style={{ fontSize: "12px", padding: "6px 12px" }}
           >
             <PlusCircle size={15} color="var(--cyan-400)" />
-            <span>+ Penjualan</span>
+            <span>Penjualan</span>
           </button>
 
           <button
@@ -397,7 +397,7 @@ export function FinancialLedger({ project }) {
             style={{ fontSize: "12px", padding: "6px 14px" }}
           >
             <PlusCircle size={15} />
-            <span>+ Catat Pembelian Bahan</span>
+            <span>Catat Pembelian Bahan</span>
           </button>
         </div>
       </div>
@@ -500,7 +500,7 @@ export function FinancialLedger({ project }) {
               {materials.length === 0 && (
                 <tr>
                   <td colSpan="10" style={{ textAlign: "center", padding: "32px", color: "var(--text-muted)" }}>
-                    Belum ada bahan yang dicatat. Klik "+ Catat Pembelian Bahan" untuk menambahkan.
+                    Belum ada bahan yang dicatat. Klik "Catat Pembelian Bahan" untuk menambahkan.
                   </td>
                 </tr>
               )}

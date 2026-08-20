@@ -360,7 +360,7 @@ export function SplicingTree({ project }) {
 
             <button className="btn btn-primary" onClick={handleOpenAdd} style={{ fontSize: "13px", padding: "10px 16px" }}>
               <Plus size={16} />
-              <span>+ Tambah Pasangan Resep</span>
+              <span>Tambah Pasangan Resep</span>
             </button>
           </div>
         </div>

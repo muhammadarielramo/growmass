@@ -181,7 +181,7 @@ export function MaterialPurchases({ project }) {
               style={{ fontSize: "13px", padding: "8px 16px" }}
             >
               <PlusCircle size={16} />
-              <span>+ Catat Pembelian Bahan</span>
+              <span>Catat Pembelian Bahan</span>
             </button>
           </div>
         </div>
