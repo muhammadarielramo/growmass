@@ -48,7 +48,6 @@ export function FinancialLedger({ project }) {
 
   // Material Form State
   const [matName, setMatName] = useState("");
-  const [matCategory, setMatCategory] = useState("Bibit Dasar");
   const [matBranch, setMatBranch] = useState("");
   const [matQuantity, setMatQuantity] = useState("");
   const [matUnit, setMatUnit] = useState("pcs");
@@ -113,7 +112,6 @@ export function FinancialLedger({ project }) {
   const handleEditMaterial = (mat) => {
     setEditingMatId(mat.id);
     setMatName(mat.name);
-    setMatCategory(mat.category || "Bibit Dasar");
     setMatBranch(mat.branch || "");
     setMatQuantity(mat.quantity.toString());
     setMatRateType(mat.rateType || "total_wl");
@@ -136,7 +134,6 @@ export function FinancialLedger({ project }) {
 
     const matData = {
       name: matName.trim(),
-      category: matCategory,
       branch: matBranch.trim() || "-",
       quantity: Number(matQuantity || 0),
       unit: matUnit || "pcs",
@@ -409,7 +406,6 @@ export function FinancialLedger({ project }) {
               <tr>
                 <th style={{ width: "40px" }}>No</th>
                 <th>Nama Bahan / Item</th>
-                <th>Kategori</th>
                 <th>Cabang Alur Resep</th>
                 <th style={{ textAlign: "right" }}>Jumlah Beli (Qty)</th>
                 <th>Rate / Harga Beli</th>
@@ -442,13 +438,6 @@ export function FinancialLedger({ project }) {
                           )}
                         </div>
                       </div>
-                    </td>
-                    <td>
-                      <span className={`badge ${
-                        mat.category === "Alat Operasional" ? "badge-rose" : mat.category === "Bibit Tambahan" ? "badge-purple" : "badge-emerald"
-                      }`} style={{ fontSize: "11px" }}>
-                        {mat.category || "Bibit Dasar"}
-                      </span>
                     </td>
                     <td style={{ color: "var(--cyan-300)", fontSize: "12px", fontWeight: "500" }}>
                       {mat.branch || "-"}
@@ -495,7 +484,7 @@ export function FinancialLedger({ project }) {
 
               {materials.length === 0 && (
                 <tr>
-                  <td colSpan="10" style={{ textAlign: "center", padding: "32px", color: "var(--text-muted)" }}>
+                  <td colSpan="9" style={{ textAlign: "center", padding: "32px", color: "var(--text-muted)" }}>
                     Belum ada bahan yang dicatat. Klik "Catat Pembelian Bahan" untuk menambahkan.
                   </td>
                 </tr>
@@ -503,7 +492,7 @@ export function FinancialLedger({ project }) {
             </tbody>
             <tfoot>
               <tr style={{ background: "var(--bg-surface-elevated)", fontWeight: "800", borderTop: "2px solid var(--border-medium)" }}>
-                <td colSpan="4" style={{ padding: "14px 16px", color: "var(--text-main)" }}>
+                <td colSpan="3" style={{ padding: "14px 16px", color: "var(--text-main)" }}>
                   TOTAL REKAPAN BELANJA BAHAN ({materials.length} Item)
                 </td>
                 <td style={{ textAlign: "right", padding: "14px 16px" }} className="font-mono">
@@ -672,38 +661,16 @@ export function FinancialLedger({ project }) {
 
             <form onSubmit={handleSaveMaterial}>
               <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                {/* Name with ItemAutocomplete & Category */}
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Nama Bahan / Item (Auto-search 850+ Item)</label>
-                    <ItemAutocomplete
-                      value={matName}
-                      onChange={(val, item) => {
-                        setMatName(val);
-                        if (item?.category) {
-                          if (item.category.toLowerCase().includes("seed")) setMatCategory("Bibit Dasar");
-                          else if (item.category.toLowerCase().includes("tool") || item.category.toLowerCase().includes("consumable")) setMatCategory("Alat Operasional");
-                        }
-                      }}
-                      placeholder="Cari item Growtopia..."
-                      required
-                      autoFocus
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Kategori</label>
-                    <select
-                      value={matCategory}
-                      onChange={(e) => setMatCategory(e.target.value)}
-                      className="form-select"
-                    >
-                      <option value="Bibit Dasar">Bibit Dasar</option>
-                      <option value="Bibit Tambahan">Bibit Tambahan / Instan</option>
-                      <option value="Alat Operasional">Alat Operasional</option>
-                      <option value="Lainnya">Lainnya</option>
-                    </select>
-                  </div>
+                {/* Name with ItemAutocomplete */}
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Nama Bahan / Item (Auto-search 850+ Item)</label>
+                  <ItemAutocomplete
+                    value={matName}
+                    onChange={(val) => setMatName(val)}
+                    placeholder="Cari item Growtopia..."
+                    required
+                    autoFocus
+                  />
                 </div>
 
                 {/* Resep Branch */}

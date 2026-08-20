@@ -36,9 +36,6 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
             border: "1px solid var(--border-medium)"
           }}>
             <div style={{ marginBottom: "8px" }}>
-              <span className="badge badge-emerald" style={{ marginBottom: "4px" }}>
-                {activeRecipeDetail.category}
-              </span>
               <h2 style={{ fontSize: "22px", fontWeight: "800", margin: 0 }}>{activeRecipeDetail.name}</h2>
             </div>
 

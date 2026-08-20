@@ -161,14 +161,7 @@ export function ItemAutocomplete({
                       </span>
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      {item.category && (
-                        <span className="badge badge-neutral" style={{ fontSize: "10px", padding: "1px 5px" }}>
-                          {item.category}
-                        </span>
-                      )}
-                      {isCurrent && <Check size={14} color="var(--emerald-400)" />}
-                    </div>
+                    {isCurrent && <Check size={14} color="var(--emerald-400)" />}
                   </div>
                 );
               })}

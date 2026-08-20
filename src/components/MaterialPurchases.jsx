@@ -31,7 +31,6 @@ export function MaterialPurchases({ project }) {
 
   // Form State
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("Bibit Dasar");
   const [branch, setBranch] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("pcs");
@@ -39,7 +38,6 @@ export function MaterialPurchases({ project }) {
   const [rateValue, setRateValue] = useState("");
   const [notes, setNotes] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(getTodayGMT7());
-  const [filterCategory, setFilterCategory] = useState("all");
 
   const materials = project.materials || [];
 
@@ -59,7 +57,6 @@ export function MaterialPurchases({ project }) {
   const handleOpenAddModal = () => {
     setEditingMatId(null);
     setName("");
-    setCategory("Bibit Dasar");
     setBranch("");
     setQuantity("");
     setRateType("item_per_wl");
@@ -72,7 +69,6 @@ export function MaterialPurchases({ project }) {
   const handleEditModal = (mat) => {
     setEditingMatId(mat.id);
     setName(mat.name);
-    setCategory(mat.category || "Bibit Dasar");
     setBranch(mat.branch || "");
     setQuantity(mat.quantity.toString());
     setRateType(mat.rateType || "item_per_wl");
@@ -95,7 +91,6 @@ export function MaterialPurchases({ project }) {
 
     const matData = {
       name: name.trim(),
-      category,
       branch: branch.trim() || "-",
       quantity: Number(quantity || 0),
       unit: unit || "pcs",
@@ -115,13 +110,6 @@ export function MaterialPurchases({ project }) {
 
     setShowAddModal(false);
   };
-
-  const filteredMaterials = materials.filter((m) => {
-    if (filterCategory === "all") return true;
-    return m.category === filterCategory;
-  });
-
-  const categories = ["all", "Bibit Dasar", "Bibit Tambahan", "Alat Operasional"];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -186,31 +174,6 @@ export function MaterialPurchases({ project }) {
         </div>
       </div>
 
-      {/* Category Filter Pills */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setFilterCategory(cat)}
-              className={`badge ${filterCategory === cat ? "badge-amber" : "badge-neutral"}`}
-              style={{
-                cursor: "pointer",
-                padding: "6px 14px",
-                fontSize: "12px",
-                border: filterCategory === cat ? "1px solid var(--amber-500)" : "1px solid var(--border-subtle)"
-              }}
-            >
-              {cat === "all" ? `Semua Bahan (${materials.length})` : `${cat} (${materials.filter(m => m.category === cat).length})`}
-            </button>
-          ))}
-        </div>
-
-        <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
-          Didukung 850+ database item Growtopia resmi dengan auto-complete cepat
-        </p>
-      </div>
-
       {/* Main Material Purchases Table */}
       <div className="custom-table-wrapper">
         <table className="custom-table">
@@ -218,7 +181,6 @@ export function MaterialPurchases({ project }) {
             <tr>
               <th style={{ width: "40px" }}>No</th>
               <th>Nama Bahan / Item</th>
-              <th>Kategori</th>
               <th>Cabang Alur Resep</th>
               <th style={{ textAlign: "right" }}>Jumlah Beli (Qty)</th>
               <th>Rate / Harga Beli</th>
@@ -229,7 +191,7 @@ export function MaterialPurchases({ project }) {
             </tr>
           </thead>
           <tbody>
-            {filteredMaterials.map((mat, idx) => {
+            {materials.map((mat, idx) => {
               const qty = Number(mat.quantity || 0);
               const totalWL = Number(mat.totalWL || 0);
               const unitPrice = qty > 0 ? (totalWL / qty).toFixed(4) : "-";
@@ -251,13 +213,6 @@ export function MaterialPurchases({ project }) {
                         )}
                       </div>
                     </div>
-                  </td>
-                  <td>
-                    <span className={`badge ${
-                      mat.category === "Alat Operasional" ? "badge-rose" : mat.category === "Bibit Tambahan" ? "badge-purple" : "badge-emerald"
-                    }`} style={{ fontSize: "11px" }}>
-                      {mat.category || "Bibit Dasar"}
-                    </span>
                   </td>
                   <td style={{ color: "var(--cyan-300)", fontSize: "12px", fontWeight: "500" }}>
                     {mat.branch || "-"}
@@ -302,17 +257,17 @@ export function MaterialPurchases({ project }) {
               );
             })}
 
-            {filteredMaterials.length === 0 && (
+            {materials.length === 0 && (
               <tr>
-                <td colSpan="10" style={{ textAlign: "center", padding: "32px", color: "var(--text-muted)" }}>
-                  Belum ada bahan yang dicatat dalam kategori ini.
+                <td colSpan="9" style={{ textAlign: "center", padding: "32px", color: "var(--text-muted)" }}>
+                  Belum ada bahan yang dicatat. Klik "Catat Pembelian Bahan" untuk menambahkan.
                 </td>
               </tr>
             )}
           </tbody>
           <tfoot>
             <tr style={{ background: "var(--bg-surface-elevated)", fontWeight: "800", borderTop: "2px solid var(--border-medium)" }}>
-              <td colSpan="4" style={{ padding: "14px 16px", color: "var(--text-main)" }}>
+              <td colSpan="3" style={{ padding: "14px 16px", color: "var(--text-main)" }}>
                 TOTAL KESELURUHAN PENGADAAN BAHAN ({materials.length} Item)
               </td>
               <td style={{ textAlign: "right", padding: "14px 16px" }} className="font-mono">
@@ -347,38 +302,16 @@ export function MaterialPurchases({ project }) {
 
             <form onSubmit={handleSaveMaterial}>
               <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                {/* Name with ItemAutocomplete & Category */}
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Nama Bahan / Item (Auto-search 850+ Item)</label>
-                    <ItemAutocomplete
-                      value={name}
-                      onChange={(val, item) => {
-                        setName(val);
-                        if (item?.category) {
-                          if (item.category.toLowerCase().includes("seed")) setCategory("Bibit Dasar");
-                          else if (item.category.toLowerCase().includes("tool") || item.category.toLowerCase().includes("consumable")) setCategory("Alat Operasional");
-                        }
-                      }}
-                      placeholder="Cari item Growtopia..."
-                      required
-                      autoFocus
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Kategori</label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="form-select"
-                    >
-                      <option value="Bibit Dasar">Bibit Dasar</option>
-                      <option value="Bibit Tambahan">Bibit Tambahan / Instan</option>
-                      <option value="Alat Operasional">Alat Operasional</option>
-                      <option value="Lainnya">Lainnya</option>
-                    </select>
-                  </div>
+                {/* Name with ItemAutocomplete */}
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Nama Bahan / Item (Auto-search 850+ Item)</label>
+                  <ItemAutocomplete
+                    value={name}
+                    onChange={(val) => setName(val)}
+                    placeholder="Cari item Growtopia..."
+                    required
+                    autoFocus
+                  />
                 </div>
 
                 {/* Resep Branch */}

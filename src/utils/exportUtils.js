@@ -62,7 +62,6 @@ export function exportProjectToXLSX(project, currencyConfig) {
   const materialsHeader = [
     "No",
     "Nama Bahan / Item",
-    "Kategori",
     "Cabang Resep",
     "Jumlah (Qty)",
     "Satuan",
@@ -83,7 +82,6 @@ export function exportProjectToXLSX(project, currencyConfig) {
     return [
       idx + 1,
       m.name,
-      m.category || "Bahan Dasar",
       m.branch || "-",
       qty,
       m.unit || "pcs",
@@ -194,7 +192,6 @@ export function exportProjectToCSV(project, currencyConfig) {
   const headers = [
     "No",
     "Nama Bahan",
-    "Kategori",
     "Cabang",
     "Jumlah (Qty)",
     "Rate Input",
@@ -209,7 +206,6 @@ export function exportProjectToCSV(project, currencyConfig) {
     return [
       idx + 1,
       `"${m.name.replace(/"/g, '""')}"`,
-      `"${(m.category || "Bahan Dasar").replace(/"/g, '""')}"`,
       `"${(m.branch || "-").replace(/"/g, '""')}"`,
       Number(m.quantity || 0),
       `"${(m.rateDisplay || "-").replace(/"/g, '""')}"`,
