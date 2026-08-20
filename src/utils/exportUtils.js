@@ -1,218 +1,13 @@
 /**
  * Professional Pro Excel & CSV Export Utilities for Growmass
- * Uses xlsx-js-style to render fully styled, color-coded, branded financial spreadsheets
+ * Uses official SheetJS (xlsx) for 100% reliable browser compatibility and clean spreadsheet layouts
  */
-import XLSX from "xlsx-js-style";
+import * as XLSX from "xlsx";
 import { formatLocks, wlToIdr } from "./currency";
 import { formatStatusLabel } from "./statusUtils";
 
-// --- Color & Style Palette ---
-const STYLES = {
-  // Banners & Headers
-  titleBanner: {
-    font: { name: "Segoe UI", sz: 14, bold: true, color: { rgb: "FFFFFF" } },
-    fill: { fgColor: { rgb: "0F172A" } }, // Dark Navy
-    alignment: { vertical: "center", horizontal: "left" },
-    border: {
-      bottom: { style: "medium", color: { rgb: "334155" } }
-    }
-  },
-  metaLabel: {
-    font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "475569" } },
-    fill: { fgColor: { rgb: "F1F5F9" } },
-    alignment: { vertical: "center", horizontal: "left" }
-  },
-  metaValue: {
-    font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "0F172A" } },
-    fill: { fgColor: { rgb: "F8FAFC" } },
-    alignment: { vertical: "center", horizontal: "left" }
-  },
-
-  // Table Headers
-  thEmerald: {
-    font: { name: "Segoe UI", sz: 10.5, bold: true, color: { rgb: "FFFFFF" } },
-    fill: { fgColor: { rgb: "065F46" } }, // Emerald Green
-    alignment: { vertical: "center", horizontal: "center", wrapText: true },
-    border: {
-      top: { style: "thin", color: { rgb: "047857" } },
-      bottom: { style: "medium", color: { rgb: "022C22" } },
-      left: { style: "thin", color: { rgb: "047857" } },
-      right: { style: "thin", color: { rgb: "047857" } }
-    }
-  },
-  thSlate: {
-    font: { name: "Segoe UI", sz: 10.5, bold: true, color: { rgb: "FFFFFF" } },
-    fill: { fgColor: { rgb: "1E293B" } }, // Slate Dark
-    alignment: { vertical: "center", horizontal: "center", wrapText: true },
-    border: {
-      top: { style: "thin", color: { rgb: "334155" } },
-      bottom: { style: "medium", color: { rgb: "0F172A" } },
-      left: { style: "thin", color: { rgb: "334155" } },
-      right: { style: "thin", color: { rgb: "334155" } }
-    }
-  },
-
-  // Data Cells
-  tdEven: {
-    font: { name: "Segoe UI", sz: 10, color: { rgb: "1E293B" } },
-    fill: { fgColor: { rgb: "FFFFFF" } },
-    border: {
-      top: { style: "thin", color: { rgb: "E2E8F0" } },
-      bottom: { style: "thin", color: { rgb: "E2E8F0" } },
-      left: { style: "thin", color: { rgb: "E2E8F0" } },
-      right: { style: "thin", color: { rgb: "E2E8F0" } }
-    }
-  },
-  tdOdd: {
-    font: { name: "Segoe UI", sz: 10, color: { rgb: "1E293B" } },
-    fill: { fgColor: { rgb: "F8FAFC" } }, // Soft subtle zebra
-    border: {
-      top: { style: "thin", color: { rgb: "E2E8F0" } },
-      bottom: { style: "thin", color: { rgb: "E2E8F0" } },
-      left: { style: "thin", color: { rgb: "E2E8F0" } },
-      right: { style: "thin", color: { rgb: "E2E8F0" } }
-    }
-  },
-
-  // Highlighted Data Formats
-  tdLocks: {
-    font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "B45309" } }, // Amber
-    fill: { fgColor: { rgb: "FEF3C7" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "thin", color: { rgb: "FDE68A" } },
-      bottom: { style: "thin", color: { rgb: "FDE68A" } },
-      left: { style: "thin", color: { rgb: "FDE68A" } },
-      right: { style: "thin", color: { rgb: "FDE68A" } }
-    }
-  },
-  tdRevenue: {
-    font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "047857" } }, // Green
-    fill: { fgColor: { rgb: "ECFDF5" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "thin", color: { rgb: "A7F3D0" } },
-      bottom: { style: "thin", color: { rgb: "A7F3D0" } },
-      left: { style: "thin", color: { rgb: "A7F3D0" } },
-      right: { style: "thin", color: { rgb: "A7F3D0" } }
-    }
-  },
-  tdCapital: {
-    font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "6B21A8" } }, // Purple
-    fill: { fgColor: { rgb: "F3E8FF" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "thin", color: { rgb: "DDD6FE" } },
-      bottom: { style: "thin", color: { rgb: "DDD6FE" } },
-      left: { style: "thin", color: { rgb: "DDD6FE" } },
-      right: { style: "thin", color: { rgb: "DDD6FE" } }
-    }
-  },
-  tdExpense: {
-    font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "BE123C" } }, // Rose
-    fill: { fgColor: { rgb: "FFE4E6" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "thin", color: { rgb: "FECDD3" } },
-      bottom: { style: "thin", color: { rgb: "FECDD3" } },
-      left: { style: "thin", color: { rgb: "FECDD3" } },
-      right: { style: "thin", color: { rgb: "FECDD3" } }
-    }
-  },
-
-  // Total Summary Footer
-  tfootTotalLabel: {
-    font: { name: "Segoe UI", sz: 11, bold: true, color: { rgb: "0F172A" } },
-    fill: { fgColor: { rgb: "E2E8F0" } },
-    alignment: { vertical: "center", horizontal: "left" },
-    border: {
-      top: { style: "medium", color: { rgb: "475569" } },
-      bottom: { style: "double", color: { rgb: "0F172A" } },
-      left: { style: "thin", color: { rgb: "CBD5E1" } },
-      right: { style: "thin", color: { rgb: "CBD5E1" } }
-    }
-  },
-  tfootTotalLocks: {
-    font: { name: "Segoe UI", sz: 11, bold: true, color: { rgb: "92400E" } },
-    fill: { fgColor: { rgb: "FEF3C7" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "medium", color: { rgb: "475569" } },
-      bottom: { style: "double", color: { rgb: "0F172A" } },
-      left: { style: "thin", color: { rgb: "CBD5E1" } },
-      right: { style: "thin", color: { rgb: "CBD5E1" } }
-    }
-  },
-  tfootTotalIdr: {
-    font: { name: "Segoe UI", sz: 11, bold: true, color: { rgb: "065F46" } },
-    fill: { fgColor: { rgb: "D1FAE5" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "medium", color: { rgb: "475569" } },
-      bottom: { style: "double", color: { rgb: "0F172A" } },
-      left: { style: "thin", color: { rgb: "CBD5E1" } },
-      right: { style: "thin", color: { rgb: "CBD5E1" } }
-    }
-  },
-
-  // KPI Cards in Executive Dashboard
-  kpiSectionHeader: {
-    font: { name: "Segoe UI", sz: 12, bold: true, color: { rgb: "FFFFFF" } },
-    fill: { fgColor: { rgb: "0F172A" } },
-    alignment: { vertical: "center", horizontal: "left" },
-    border: {
-      bottom: { style: "medium", color: { rgb: "10B981" } }
-    }
-  },
-  kpiCardLabel: {
-    font: { name: "Segoe UI", sz: 10, bold: true, color: { rgb: "475569" } },
-    fill: { fgColor: { rgb: "F8FAFC" } },
-    alignment: { vertical: "center", horizontal: "left" },
-    border: {
-      top: { style: "thin", color: { rgb: "CBD5E1" } },
-      bottom: { style: "thin", color: { rgb: "CBD5E1" } },
-      left: { style: "thin", color: { rgb: "CBD5E1" } },
-      right: { style: "thin", color: { rgb: "CBD5E1" } }
-    }
-  },
-  kpiCardValue: {
-    font: { name: "Segoe UI", sz: 10.5, bold: true, color: { rgb: "0F172A" } },
-    fill: { fgColor: { rgb: "FFFFFF" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "thin", color: { rgb: "CBD5E1" } },
-      bottom: { style: "thin", color: { rgb: "CBD5E1" } },
-      left: { style: "thin", color: { rgb: "CBD5E1" } },
-      right: { style: "thin", color: { rgb: "CBD5E1" } }
-    }
-  },
-  kpiHighlightProfit: {
-    font: { name: "Segoe UI", sz: 11, bold: true, color: { rgb: "065F46" } },
-    fill: { fgColor: { rgb: "D1FAE5" } },
-    alignment: { vertical: "center", horizontal: "right" },
-    border: {
-      top: { style: "medium", color: { rgb: "10B981" } },
-      bottom: { style: "medium", color: { rgb: "10B981" } },
-      left: { style: "thin", color: { rgb: "10B981" } },
-      right: { style: "thin", color: { rgb: "10B981" } }
-    }
-  }
-};
-
 /**
- * Creates styled cell object
- */
-function createStyledCell(value, style, type = null) {
-  const cell = { v: value, s: style };
-  if (type) cell.t = type;
-  else if (typeof value === "number") cell.t = "n";
-  else if (typeof value === "boolean") cell.t = "b";
-  else cell.t = "s";
-  return cell;
-}
-
-/**
- * Helper to compute column widths
+ * Calculates optimal column widths so no text/numbers get truncated (###)
  */
 function calculateColumnWidths(dataMatrix) {
   if (!dataMatrix || dataMatrix.length === 0) return [];
@@ -221,8 +16,8 @@ function calculateColumnWidths(dataMatrix) {
   dataMatrix.forEach((row) => {
     if (!Array.isArray(row)) return;
     row.forEach((cellVal, colIdx) => {
-      const textVal = cellVal !== null && cellVal !== undefined ? (cellVal.v !== undefined ? cellVal.v : cellVal) : "";
-      const textLen = String(textVal).length;
+      const textVal = cellVal !== null && cellVal !== undefined ? String(cellVal) : "";
+      const textLen = textVal.length;
       colWidths[colIdx] = Math.max(colWidths[colIdx] || 10, textLen + 3);
     });
   });
@@ -231,7 +26,7 @@ function calculateColumnWidths(dataMatrix) {
 }
 
 /**
- * EXPORT 1: Dedicated Material Purchases to Styled Excel (XLSX)
+ * EXPORT 1: Dedicated Material Purchases to Pro XLSX (Excel)
  */
 export function exportMaterialsToXLSX(project, currencyConfig) {
   const wb = XLSX.utils.book_new();
@@ -241,102 +36,67 @@ export function exportMaterialsToXLSX(project, currencyConfig) {
   const totalSpendWL = materials.reduce((sum, m) => sum + Number(m.totalWL || 0), 0);
   const totalCostIDR = wlToIdr(totalSpendWL, idrPerDl);
 
-  const sheetData = [];
-
-  // 1. Title Banner
-  sheetData.push([
-    createStyledCell("GROWMASS - DAFTAR REKAPAN PEMBELIAN BAHAN PROJEK", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner)
-  ]);
-
-  // 2. Metadata Info Block
-  sheetData.push([
-    createStyledCell("Nama Projek", STYLES.metaLabel),
-    createStyledCell(project.name, STYLES.metaValue),
-    createStyledCell("Target Item", STYLES.metaLabel),
-    createStyledCell(project.targetItem || "-", STYLES.metaValue),
-    createStyledCell("Status Projek", STYLES.metaLabel),
-    createStyledCell(formatStatusLabel(project.status).toUpperCase(), STYLES.metaValue),
-    createStyledCell("", STYLES.metaValue),
-    createStyledCell("", STYLES.metaValue),
-    createStyledCell("", STYLES.metaValue)
-  ]);
-
-  sheetData.push([
-    createStyledCell("World Farm", STYLES.metaLabel),
-    createStyledCell(project.worldName || "-", STYLES.metaValue),
-    createStyledCell("Kurs 1 DL", STYLES.metaLabel),
-    createStyledCell(`Rp ${idrPerDl.toLocaleString("id-ID")}`, STYLES.metaValue),
-    createStyledCell("Tanggal Ekspor", STYLES.metaLabel),
-    createStyledCell(new Date().toLocaleDateString("id-ID"), STYLES.metaValue),
-    createStyledCell("", STYLES.metaValue),
-    createStyledCell("", STYLES.metaValue),
-    createStyledCell("", STYLES.metaValue)
-  ]);
-
-  // Empty separator
-  sheetData.push([createStyledCell("", {}), createStyledCell("", {}), createStyledCell("", {})]);
-
-  // 3. Table Header
-  const headers = [
-    "No",
-    "Tanggal",
-    "Nama Bahan / Item",
-    "Jumlah Beli (Qty)",
-    "Rate / Harga Beli",
-    "Harga Satuan (WL)",
-    "Total Biaya (WL)",
-    "Estimasi Rupiah",
-    "Catatan"
+  const sheetData = [
+    // Title Banner
+    ["GROWMASS - DAFTAR REKAPAN PEMBELIAN BAHAN PROJEK", "", "", "", "", "", "", "", ""],
+    // Metadata block
+    ["Nama Projek:", project.name, "Target Item:", project.targetItem || "-", "Status Projek:", formatStatusLabel(project.status).toUpperCase(), "", "", ""],
+    ["World Farm:", project.worldName || "-", "Kurs 1 DL:", `Rp ${idrPerDl.toLocaleString("id-ID")}`, "Tanggal Ekspor:", new Date().toLocaleDateString("id-ID"), "", "", ""],
+    ["", "", "", "", "", "", "", "", ""],
+    // Table Headers
+    [
+      "No",
+      "Tanggal",
+      "Nama Bahan / Item",
+      "Jumlah Beli (Qty)",
+      "Rate / Harga Beli",
+      "Harga Satuan (WL)",
+      "Total Biaya (WL)",
+      "Format Locks",
+      "Estimasi Rupiah",
+      "Catatan / Keterangan"
+    ]
   ];
-  sheetData.push(headers.map((h) => createStyledCell(h, STYLES.thEmerald)));
 
-  // 4. Data Rows
+  // Data rows
   materials.forEach((m, idx) => {
-    const isOdd = idx % 2 === 1;
-    const baseStyle = isOdd ? STYLES.tdOdd : STYLES.tdEven;
     const qty = Number(m.quantity || 0);
     const totalWL = Number(m.totalWL || 0);
     const unitPrice = qty > 0 ? Number((totalWL / qty).toFixed(4)) : 0;
 
     sheetData.push([
-      createStyledCell(idx + 1, { ...baseStyle, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(m.date || "-", { ...baseStyle, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(m.name, { ...baseStyle, font: { ...baseStyle.font, bold: true } }),
-      createStyledCell(qty, { ...baseStyle, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(m.rateDisplay || "-", { ...baseStyle, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(unitPrice, { ...baseStyle, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(formatLocks(totalWL), STYLES.tdLocks),
-      createStyledCell(wlToIdr(totalWL, idrPerDl), { ...baseStyle, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(m.notes || "-", baseStyle)
+      idx + 1,
+      m.date || "-",
+      m.name,
+      qty,
+      m.rateDisplay || "-",
+      unitPrice,
+      totalWL,
+      formatLocks(totalWL),
+      wlToIdr(totalWL, idrPerDl),
+      m.notes || "-"
     ]);
   });
 
-  // 5. Total Footer Row (Alinged properly!)
+  // Summary row (Aligned properly!)
   sheetData.push([
-    createStyledCell("TOTAL REKAPAN BELANJA BAHAN", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell(formatLocks(totalSpendWL), STYLES.tfootTotalLocks),
-    createStyledCell(totalCostIDR, STYLES.tfootTotalIdr),
-    createStyledCell("", STYLES.tfootTotalLabel)
+    "TOTAL REKAPAN BELANJA BAHAN",
+    "",
+    "",
+    "",
+    "",
+    "",
+    totalSpendWL,
+    formatLocks(totalSpendWL),
+    totalCostIDR,
+    ""
   ]);
 
   const ws = XLSX.utils.aoa_to_sheet(sheetData);
   ws["!cols"] = calculateColumnWidths(sheetData);
   ws["!merges"] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, // Merge Title Banner
-    { s: { r: sheetData.length - 1, c: 0 }, e: { r: sheetData.length - 1, c: 5 } } // Merge Total Label Across 6 cols
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
+    { s: { r: sheetData.length - 1, c: 0 }, e: { r: sheetData.length - 1, c: 5 } }
   ];
 
   XLSX.utils.book_append_sheet(wb, ws, "Pembelian Bahan");
@@ -346,7 +106,7 @@ export function exportMaterialsToXLSX(project, currencyConfig) {
 }
 
 /**
- * EXPORT 2: Dedicated Cash Ledger to Styled Excel (XLSX)
+ * EXPORT 2: Dedicated Cash Ledger to Pro XLSX (Excel)
  */
 export function exportCashLedgerToXLSX(project, currencyConfig) {
   const wb = XLSX.utils.book_new();
@@ -360,98 +120,70 @@ export function exportCashLedgerToXLSX(project, currencyConfig) {
   const totalRevenuesWL = revenues.reduce((s, r) => s + Number(r.amountWL || 0), 0);
   const totalExpensesWL = expenses.reduce((s, e) => s + Number(e.amountWL || 0), 0);
 
-  const sheetData = [];
-
-  // 1. Title Banner
-  sheetData.push([
-    createStyledCell("GROWMASS - BUKU KAS & ARUS TRANSAKSI MODAL / OMSET", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner),
-    createStyledCell("", STYLES.titleBanner)
-  ]);
-
-  // 2. Metadata Info Block
-  sheetData.push([
-    createStyledCell("Nama Projek", STYLES.metaLabel),
-    createStyledCell(project.name, STYLES.metaValue),
-    createStyledCell("Total Modal", STYLES.metaLabel),
-    createStyledCell(formatLocks(totalCapitalWL), STYLES.metaValue),
-    createStyledCell("Total Omset", STYLES.metaLabel),
-    createStyledCell(formatLocks(totalRevenuesWL), STYLES.metaValue),
-    createStyledCell("Kurs 1 DL", STYLES.metaLabel),
-    createStyledCell(`Rp ${idrPerDl.toLocaleString("id-ID")}`, STYLES.metaValue),
-    createStyledCell("", STYLES.metaValue)
-  ]);
-
-  // Empty separator
-  sheetData.push([createStyledCell("", {})]);
-
-  // 3. Table Header
-  const headers = [
-    "No",
-    "Tipe Transaksi",
-    "Tanggal (GMT+7)",
-    "Keterangan Transaksi",
-    "Kategori",
-    "Jumlah (Qty)",
-    "Nominal (WL)",
-    "Format Locks",
-    "Estimasi Rupiah"
+  const sheetData = [
+    // Title Banner
+    ["GROWMASS - BUKU KAS & ARUS TRANSAKSI MODAL / OMSET", "", "", "", "", "", "", "", ""],
+    // Metadata block
+    ["Nama Projek:", project.name, "Total Setoran Modal:", formatLocks(totalCapitalWL), "Total Hasil Omset:", formatLocks(totalRevenuesWL), "Kurs 1 DL:", `Rp ${idrPerDl.toLocaleString("id-ID")}`, ""],
+    ["", "", "", "", "", "", "", "", ""],
+    // Table Headers
+    [
+      "No",
+      "Tipe Transaksi",
+      "Tanggal (GMT+7)",
+      "Keterangan Transaksi",
+      "Kategori",
+      "Jumlah (Qty)",
+      "Nominal (WL)",
+      "Format Locks",
+      "Estimasi Rupiah"
+    ]
   ];
-  sheetData.push(headers.map((h) => createStyledCell(h, STYLES.thSlate)));
 
   let rowIdx = 1;
 
-  // Capital Entries
   capital.forEach((c) => {
     const amt = Number(c.amountWL || 0);
     sheetData.push([
-      createStyledCell(rowIdx++, STYLES.tdEven),
-      createStyledCell("SETORAN MODAL", STYLES.tdCapital),
-      createStyledCell(c.date || "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(c.note || "Setoran Modal", STYLES.tdEven),
-      createStyledCell("Capital", STYLES.tdEven),
-      createStyledCell("-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(amt, { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(`+${formatLocks(amt)}`, STYLES.tdCapital),
-      createStyledCell(wlToIdr(amt, idrPerDl), { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } })
+      rowIdx++,
+      "SETORAN MODAL",
+      c.date || "-",
+      c.note || "Setoran Modal",
+      "Modal",
+      "-",
+      amt,
+      `+${formatLocks(amt)}`,
+      wlToIdr(amt, idrPerDl)
     ]);
   });
 
-  // Revenue Entries
   revenues.forEach((r) => {
     const amt = Number(r.amountWL || 0);
     sheetData.push([
-      createStyledCell(rowIdx++, STYLES.tdEven),
-      createStyledCell("PENJUALAN (OMSET)", STYLES.tdRevenue),
-      createStyledCell(r.date || "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(r.note || "Hasil Penjualan", STYLES.tdEven),
-      createStyledCell(r.category || "seeds", STYLES.tdEven),
-      createStyledCell(r.quantity ? Number(r.quantity) : "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(amt, { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(`+${formatLocks(amt)}`, STYLES.tdRevenue),
-      createStyledCell(wlToIdr(amt, idrPerDl), { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } })
+      rowIdx++,
+      "PENJUALAN (OMSET)",
+      r.date || "-",
+      r.note || "Hasil Penjualan",
+      r.category || "seeds",
+      r.quantity ? Number(r.quantity) : "-",
+      amt,
+      `+${formatLocks(amt)}`,
+      wlToIdr(amt, idrPerDl)
     ]);
   });
 
-  // Expense Entries
   expenses.forEach((e) => {
     const amt = Number(e.amountWL || 0);
     sheetData.push([
-      createStyledCell(rowIdx++, STYLES.tdEven),
-      createStyledCell("PENGELUARAN", STYLES.tdExpense),
-      createStyledCell(e.date || "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(e.note || "Pengeluaran Operasional", STYLES.tdEven),
-      createStyledCell(e.category || "expenses", STYLES.tdEven),
-      createStyledCell(e.quantity ? Number(e.quantity) : "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(-amt, { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(`-${formatLocks(amt)}`, STYLES.tdExpense),
-      createStyledCell(-wlToIdr(amt, idrPerDl), { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } })
+      rowIdx++,
+      "PENGELUARAN LAINNYA",
+      e.date || "-",
+      e.note || "Pengeluaran Operasional",
+      e.category || "expenses",
+      e.quantity ? Number(e.quantity) : "-",
+      -amt,
+      `-${formatLocks(amt)}`,
+      -wlToIdr(amt, idrPerDl)
     ]);
   });
 
@@ -491,22 +223,22 @@ export function exportProjectToXLSX(project, currencyConfig) {
 
   // --- Sheet 1: Dashboard Ringkasan Finansial & KPI ---
   const dashboardData = [
-    [createStyledCell("GROWMASS - FINANCIAL REPORT & EXECUTIVE DASHBOARD", STYLES.titleBanner), createStyledCell("", STYLES.titleBanner), createStyledCell("", STYLES.titleBanner), createStyledCell("", STYLES.titleBanner)],
-    [createStyledCell("", {}), createStyledCell("", {})],
-    [createStyledCell("1. INFORMASI UMUM PROJEK", STYLES.kpiSectionHeader), createStyledCell("", STYLES.kpiSectionHeader), createStyledCell("", STYLES.kpiSectionHeader), createStyledCell("", STYLES.kpiSectionHeader)],
-    [createStyledCell("Nama Projek", STYLES.kpiCardLabel), createStyledCell(project.name, STYLES.kpiCardValue), createStyledCell("World Farm", STYLES.kpiCardLabel), createStyledCell(project.worldName || "-", STYLES.kpiCardValue)],
-    [createStyledCell("Target Item", STYLES.kpiCardLabel), createStyledCell(project.targetItem || "-", STYLES.kpiCardValue), createStyledCell("World Storage", STYLES.kpiCardLabel), createStyledCell(project.storageWorld || "-", STYLES.kpiCardValue)],
-    [createStyledCell("Target Jumlah (Qty)", STYLES.kpiCardLabel), createStyledCell(project.targetQuantity ? Number(project.targetQuantity).toLocaleString() : "Fleksibel", STYLES.kpiCardValue), createStyledCell("Status Projek", STYLES.kpiCardLabel), createStyledCell(formatStatusLabel(project.status).toUpperCase(), STYLES.kpiCardValue)],
-    [createStyledCell("Tanggal Dibuat", STYLES.kpiCardLabel), createStyledCell(project.createdDateGMT7 || new Date(project.createdAt).toLocaleDateString("id-ID"), STYLES.kpiCardValue), createStyledCell("Kurs Acuan 1 DL", STYLES.kpiCardLabel), createStyledCell(`Rp ${idrPerDl.toLocaleString("id-ID")}`, STYLES.kpiCardValue)],
-    [createStyledCell("", {}), createStyledCell("", {})],
-    [createStyledCell("2. REKAPITULASI KEUANGAN & LABA / RUGI", STYLES.kpiSectionHeader), createStyledCell("", STYLES.kpiSectionHeader), createStyledCell("", STYLES.kpiSectionHeader), createStyledCell("", STYLES.kpiSectionHeader)],
-    [createStyledCell("Total Setoran Modal Awal", STYLES.kpiCardLabel), createStyledCell(formatLocks(totalCapitalWL), STYLES.tdCapital), createStyledCell("Estimasi Rupiah", STYLES.kpiCardLabel), createStyledCell(wlToIdr(totalCapitalWL, idrPerDl), STYLES.kpiCardValue)],
-    [createStyledCell("Total Belanja Bahan", STYLES.kpiCardLabel), createStyledCell(formatLocks(totalMaterialSpendWL), STYLES.tdLocks), createStyledCell("Estimasi Rupiah", STYLES.kpiCardLabel), createStyledCell(wlToIdr(totalMaterialSpendWL, idrPerDl), STYLES.kpiCardValue)],
-    [createStyledCell("Total Biaya Lainnya / Operasional", STYLES.kpiCardLabel), createStyledCell(formatLocks(totalOtherExpensesWL), STYLES.tdExpense), createStyledCell("Estimasi Rupiah", STYLES.kpiCardLabel), createStyledCell(wlToIdr(totalOtherExpensesWL, idrPerDl), STYLES.kpiCardValue)],
-    [createStyledCell("Grand Total Pengeluaran Modal", STYLES.kpiCardLabel), createStyledCell(formatLocks(grandTotalExpensesWL), STYLES.tdExpense), createStyledCell("Estimasi Rupiah", STYLES.kpiCardLabel), createStyledCell(wlToIdr(grandTotalExpensesWL, idrPerDl), STYLES.kpiCardValue)],
-    [createStyledCell("Total Hasil Penjualan (Omset)", STYLES.kpiCardLabel), createStyledCell(formatLocks(totalRevenuesWL), STYLES.tdRevenue), createStyledCell("Estimasi Rupiah", STYLES.kpiCardLabel), createStyledCell(wlToIdr(totalRevenuesWL, idrPerDl), STYLES.kpiCardValue)],
-    [createStyledCell("Laba Bersih / Net Profit", STYLES.kpiCardLabel), createStyledCell(formatLocks(netProfitWL), STYLES.kpiHighlightProfit), createStyledCell("Estimasi Rupiah", STYLES.kpiCardLabel), createStyledCell(wlToIdr(netProfitWL, idrPerDl), STYLES.kpiHighlightProfit)],
-    [createStyledCell("Return on Investment (ROI)", STYLES.kpiCardLabel), createStyledCell(`${roi}%`, STYLES.kpiHighlightProfit), createStyledCell("Efisiensi Modal", STYLES.kpiCardLabel), createStyledCell(netProfitWL >= 0 ? "PROFITABLE ✓" : "DEFICIT", STYLES.kpiCardValue)]
+    ["GROWMASS - FINANCIAL REPORT & EXECUTIVE DASHBOARD", "", "", ""],
+    ["", "", "", ""],
+    ["1. INFORMASI UMUM PROJEK", "", "", ""],
+    ["Nama Projek", project.name, "World Farm", project.worldName || "-"],
+    ["Target Item", project.targetItem || "-", "World Storage", project.storageWorld || "-"],
+    ["Target Jumlah (Qty)", project.targetQuantity ? Number(project.targetQuantity).toLocaleString() : "Fleksibel", "Status Projek", formatStatusLabel(project.status).toUpperCase()],
+    ["Tanggal Dibuat", project.createdDateGMT7 || new Date(project.createdAt).toLocaleDateString("id-ID"), "Kurs Acuan 1 DL", `Rp ${idrPerDl.toLocaleString("id-ID")}`],
+    ["", "", "", ""],
+    ["2. REKAPITULASI KEUANGAN & LABA / RUGI", "", "", ""],
+    ["Total Setoran Modal Awal", formatLocks(totalCapitalWL), "Estimasi Rupiah", wlToIdr(totalCapitalWL, idrPerDl)],
+    ["Total Belanja Bahan", formatLocks(totalMaterialSpendWL), "Estimasi Rupiah", wlToIdr(totalMaterialSpendWL, idrPerDl)],
+    ["Total Biaya Operasional / Lainnya", formatLocks(totalOtherExpensesWL), "Estimasi Rupiah", wlToIdr(totalOtherExpensesWL, idrPerDl)],
+    ["Grand Total Pengeluaran Modal", formatLocks(grandTotalExpensesWL), "Estimasi Rupiah", wlToIdr(grandTotalExpensesWL, idrPerDl)],
+    ["Total Hasil Penjualan (Omset)", formatLocks(totalRevenuesWL), "Estimasi Rupiah", wlToIdr(totalRevenuesWL, idrPerDl)],
+    ["Laba Bersih / Net Profit", formatLocks(netProfitWL), "Estimasi Rupiah", wlToIdr(netProfitWL, idrPerDl)],
+    ["Return on Investment (ROI)", `${roi}%`, "Status Finansial", netProfitWL >= 0 ? "PROFITABLE ✓" : "DEFICIT"]
   ];
 
   const wsSummary = XLSX.utils.aoa_to_sheet(dashboardData);
@@ -520,36 +252,36 @@ export function exportProjectToXLSX(project, currencyConfig) {
 
   // --- Sheet 2: Pembelian Bahan ---
   const materialsSheetData = [
-    ["No", "Tanggal", "Nama Bahan / Item", "Jumlah (Qty)", "Rate / Harga", "Harga Satuan (WL)", "Total Biaya (WL)", "Estimasi Rupiah", "Catatan"].map((h) => createStyledCell(h, STYLES.thEmerald))
+    ["No", "Tanggal", "Nama Bahan / Item", "Jumlah (Qty)", "Rate / Harga", "Harga Satuan (WL)", "Total Biaya (WL)", "Format Locks", "Estimasi Rupiah", "Catatan"]
   ];
   materials.forEach((m, idx) => {
-    const isOdd = idx % 2 === 1;
-    const baseStyle = isOdd ? STYLES.tdOdd : STYLES.tdEven;
     const qty = Number(m.quantity || 0);
     const totalWL = Number(m.totalWL || 0);
     const unitPrice = qty > 0 ? Number((totalWL / qty).toFixed(4)) : 0;
     materialsSheetData.push([
-      createStyledCell(idx + 1, { ...baseStyle, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(m.date || "-", { ...baseStyle, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(m.name, { ...baseStyle, font: { ...baseStyle.font, bold: true } }),
-      createStyledCell(qty, { ...baseStyle, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(m.rateDisplay || "-", { ...baseStyle, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(unitPrice, { ...baseStyle, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(formatLocks(totalWL), STYLES.tdLocks),
-      createStyledCell(wlToIdr(totalWL, idrPerDl), { ...baseStyle, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(m.notes || "-", baseStyle)
+      idx + 1,
+      m.date || "-",
+      m.name,
+      qty,
+      m.rateDisplay || "-",
+      unitPrice,
+      totalWL,
+      formatLocks(totalWL),
+      wlToIdr(totalWL, idrPerDl),
+      m.notes || "-"
     ]);
   });
   materialsSheetData.push([
-    createStyledCell("TOTAL REKAPAN BELANJA BAHAN", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell("", STYLES.tfootTotalLabel),
-    createStyledCell(formatLocks(totalMaterialSpendWL), STYLES.tfootTotalLocks),
-    createStyledCell(wlToIdr(totalMaterialSpendWL, idrPerDl), STYLES.tfootTotalIdr),
-    createStyledCell("", STYLES.tfootTotalLabel)
+    "TOTAL REKAPAN BELANJA BAHAN",
+    "",
+    "",
+    "",
+    "",
+    "",
+    totalMaterialSpendWL,
+    formatLocks(totalMaterialSpendWL),
+    wlToIdr(totalMaterialSpendWL, idrPerDl),
+    ""
   ]);
   const wsMaterials = XLSX.utils.aoa_to_sheet(materialsSheetData);
   wsMaterials["!cols"] = calculateColumnWidths(materialsSheetData);
@@ -560,50 +292,20 @@ export function exportProjectToXLSX(project, currencyConfig) {
 
   // --- Sheet 3: Buku Kas & Transaksi ---
   const ledgerSheetData = [
-    ["No", "Tipe Transaksi", "Tanggal (GMT+7)", "Keterangan", "Kategori", "Jumlah (Qty)", "Nominal (WL)", "Format Locks", "Estimasi Rupiah"].map((h) => createStyledCell(h, STYLES.thSlate))
+    ["No", "Tipe Transaksi", "Tanggal (GMT+7)", "Keterangan", "Kategori", "Jumlah (Qty)", "Nominal (WL)", "Format Locks", "Estimasi Rupiah"]
   ];
   let ledgerIdx = 1;
   capital.forEach((c) => {
     const amt = Number(c.amountWL || 0);
-    ledgerSheetData.push([
-      createStyledCell(ledgerIdx++, STYLES.tdEven),
-      createStyledCell("SETORAN MODAL", STYLES.tdCapital),
-      createStyledCell(c.date || "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(c.note || "Modal", STYLES.tdEven),
-      createStyledCell("Capital", STYLES.tdEven),
-      createStyledCell("-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(amt, { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(`+${formatLocks(amt)}`, STYLES.tdCapital),
-      createStyledCell(wlToIdr(amt, idrPerDl), { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } })
-    ]);
+    ledgerSheetData.push([ledgerIdx++, "SETORAN MODAL", c.date || "-", c.note || "Modal", "Capital", "-", amt, formatLocks(amt), wlToIdr(amt, idrPerDl)]);
   });
   revenues.forEach((r) => {
     const amt = Number(r.amountWL || 0);
-    ledgerSheetData.push([
-      createStyledCell(ledgerIdx++, STYLES.tdEven),
-      createStyledCell("PENJUALAN", STYLES.tdRevenue),
-      createStyledCell(r.date || "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(r.note || "Penjualan", STYLES.tdEven),
-      createStyledCell(r.category || "seeds", STYLES.tdEven),
-      createStyledCell(r.quantity ? Number(r.quantity) : "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(amt, { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(`+${formatLocks(amt)}`, STYLES.tdRevenue),
-      createStyledCell(wlToIdr(amt, idrPerDl), { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } })
-    ]);
+    ledgerSheetData.push([ledgerIdx++, "PENJUALAN", r.date || "-", r.note || "Penjualan", r.category || "seeds", r.quantity || "-", amt, formatLocks(amt), wlToIdr(amt, idrPerDl)]);
   });
   expenses.forEach((e) => {
     const amt = Number(e.amountWL || 0);
-    ledgerSheetData.push([
-      createStyledCell(ledgerIdx++, STYLES.tdEven),
-      createStyledCell("PENGELUARAN", STYLES.tdExpense),
-      createStyledCell(e.date || "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "center" } }),
-      createStyledCell(e.note || "Pengeluaran", STYLES.tdEven),
-      createStyledCell(e.category || "expenses", STYLES.tdEven),
-      createStyledCell(e.quantity ? Number(e.quantity) : "-", { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(-amt, { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } }),
-      createStyledCell(`-${formatLocks(amt)}`, STYLES.tdExpense),
-      createStyledCell(-wlToIdr(amt, idrPerDl), { ...STYLES.tdEven, alignment: { vertical: "center", horizontal: "right" } })
-    ]);
+    ledgerSheetData.push([ledgerIdx++, "PENGELUARAN", e.date || "-", e.note || "Pengeluaran", e.category || "expenses", e.quantity || "-", -amt, `-${formatLocks(amt)}`, -wlToIdr(amt, idrPerDl)]);
   });
   const wsLedger = XLSX.utils.aoa_to_sheet(ledgerSheetData);
   wsLedger["!cols"] = calculateColumnWidths(ledgerSheetData);
@@ -612,22 +314,22 @@ export function exportProjectToXLSX(project, currencyConfig) {
   // --- Sheet 4: Pohon Resep Splicing ---
   if (splices.length > 0) {
     const splicesSheetData = [
-      ["No", "Kelompok Alur", "Bahan A", "Jumlah A", "Rate A", "Bahan B", "Jumlah B", "Rate B", "Hasil Splice", "Jumlah Hasil", "Total Biaya Step (WL)"].map((h) => createStyledCell(h, STYLES.thSlate))
+      ["No", "Kelompok Alur", "Bahan A", "Jumlah A", "Rate A", "Bahan B", "Jumlah B", "Rate B", "Hasil Splice", "Jumlah Hasil", "Total Biaya Step (WL)"]
     ];
     splices.forEach((sp, idx) => {
       const stepCost = Number(sp.costWLA || 0) + Number(sp.costWLB || 0);
       splicesSheetData.push([
-        createStyledCell(idx + 1, STYLES.tdEven),
-        createStyledCell(sp.branch || "-", STYLES.tdEven),
-        createStyledCell(sp.itemA, STYLES.tdEven),
-        createStyledCell(sp.qtyA || 0, STYLES.tdEven),
-        createStyledCell(sp.rateDisplayA || "-", STYLES.tdEven),
-        createStyledCell(sp.itemB, STYLES.tdEven),
-        createStyledCell(sp.qtyB || 0, STYLES.tdEven),
-        createStyledCell(sp.rateDisplayB || "-", STYLES.tdEven),
-        createStyledCell(sp.result, STYLES.tdRevenue),
-        createStyledCell(sp.qtyResult || 0, STYLES.tdEven),
-        createStyledCell(formatLocks(stepCost), STYLES.tdLocks)
+        idx + 1,
+        sp.branch || "-",
+        sp.itemA,
+        sp.qtyA || 0,
+        sp.rateDisplayA || "-",
+        sp.itemB,
+        sp.qtyB || 0,
+        sp.rateDisplayB || "-",
+        sp.result,
+        sp.qtyResult || 0,
+        stepCost
       ]);
     });
     const wsSplices = XLSX.utils.aoa_to_sheet(splicesSheetData);
@@ -638,15 +340,15 @@ export function exportProjectToXLSX(project, currencyConfig) {
   // --- Sheet 5: Tahapan Projek ---
   if (stages.length > 0) {
     const stagesSheetData = [
-      ["No", "Tahap Pengerjaan", "Deskripsi / Formula", "Status", "Catatan"].map((h) => createStyledCell(h, STYLES.thSlate))
+      ["No", "Tahap Pengerjaan", "Deskripsi / Formula", "Status", "Catatan"]
     ];
     stages.forEach((s, idx) => {
       stagesSheetData.push([
-        createStyledCell(idx + 1, STYLES.tdEven),
-        createStyledCell(s.title, { ...STYLES.tdEven, font: { ...STYLES.tdEven.font, bold: true } }),
-        createStyledCell(s.description || "-", STYLES.tdEven),
-        createStyledCell(s.completed ? "SELESAI (DONE) ✓" : "DALAM PROGRES", s.completed ? STYLES.tdRevenue : STYLES.tdEven),
-        createStyledCell(s.notes || "-", STYLES.tdEven)
+        idx + 1,
+        s.title,
+        s.description || "-",
+        s.completed ? "SELESAI (DONE) ✓" : "DALAM PROGRES",
+        s.notes || "-"
       ]);
     });
     const wsStages = XLSX.utils.aoa_to_sheet(stagesSheetData);
