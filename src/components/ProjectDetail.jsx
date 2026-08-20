@@ -5,7 +5,6 @@ import { FinancialLedger } from "./FinancialLedger";
 import { StageTracker } from "./StageTracker";
 import { SplicingTree } from "./SplicingTree";
 import { formatStatusKey, formatStatusLabel } from "../utils/statusUtils";
-import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import { ConfirmModal } from "./ConfirmModal";
 import {
   ArrowLeft,
@@ -18,8 +17,6 @@ import {
   MapPin,
   Sparkles,
   TrendingUp,
-  FileText,
-  FileSpreadsheet,
   Package,
   Coins
 } from "lucide-react";
@@ -94,27 +91,6 @@ export function ProjectDetail({ onBack }) {
         </button>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-          {/* Export Buttons */}
-          <button
-            className="btn btn-secondary"
-            onClick={() => exportProjectToCSV(activeProject, config)}
-            title="Ekspor Data ke CSV"
-            style={{ fontSize: "12px", padding: "6px 12px" }}
-          >
-            <FileText size={15} color="var(--cyan-400)" />
-            <span>Ekspor CSV</span>
-          </button>
-
-          <button
-            className="btn btn-secondary"
-            onClick={() => exportProjectToXLSX(activeProject, config)}
-            title="Ekspor Rekapan Lengkap ke Excel (.xlsx)"
-            style={{ fontSize: "12px", padding: "6px 14px", border: "1px solid rgba(16, 185, 129, 0.4)" }}
-          >
-            <FileSpreadsheet size={15} color="var(--emerald-400)" />
-            <span style={{ color: "var(--emerald-400)" }}>Ekspor Excel (XLSX)</span>
-          </button>
-
           {/* Project Status Dropdown */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>Status:</span>
