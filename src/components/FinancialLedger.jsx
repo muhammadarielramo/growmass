@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
-import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculator";
-import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
+import {
+  exportMaterialsToCSV,
+  exportMaterialsToXLSX,
+  exportCashLedgerToCSV,
+  exportCashLedgerToXLSX,
+  exportProjectToXLSX,
+  exportProjectToCSV
+} from "../utils/exportUtils";
 import { getTodayGMT7, formatDateGMT7 } from "../utils/dateUtils";
 import { MaterialShortageTracker } from "./MaterialShortageTracker";
 import { ConfirmModal } from "./ConfirmModal";
@@ -305,60 +311,57 @@ export function FinancialLedger({ project }) {
       <MaterialShortageTracker project={project} />
 
       {/* Main Header with Action & Export Buttons */}
+      {/* Main Subtab Navigation Bar & Contextual Action Buttons */}
       <div className="glass-card" style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         flexWrap: "wrap",
         gap: "14px",
-        padding: "16px 20px"
+        padding: "14px 18px",
+        background: "var(--bg-glass-card)",
+        border: "1px solid var(--border-medium)",
+        borderRadius: "var(--radius-md)"
       }}>
-        {/* Sub-tab Switchers */}
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {/* Left: 2 Primary Sub-tab Switchers */}
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
           <button
             onClick={() => setActiveSubTab("materials")}
             className={`tab-btn ${activeSubTab === "materials" ? "active" : ""}`}
-            style={{ padding: "8px 16px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px" }}
+            style={{ padding: "8px 18px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px" }}
           >
             <Package size={16} />
-            <span>Daftar Pembelian Bahan ({materials.length})</span>
+            <span>Daftar Pembelian Bahan</span>
+            <span className="badge badge-amber" style={{ fontSize: "11px", padding: "1px 6px" }}>
+              {materials.length}
+            </span>
           </button>
 
           <button
             onClick={() => setActiveSubTab("all_cash")}
             className={`tab-btn ${activeSubTab === "all_cash" ? "active" : ""}`}
-            style={{ padding: "8px 16px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px" }}
+            style={{ padding: "8px 18px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px" }}
           >
             <Receipt size={16} />
             <span>Arus Kas & Buku Transaksi</span>
-          </button>
-
-          <button
-            onClick={() => setActiveSubTab("revenues")}
-            className={`tab-btn ${activeSubTab === "revenues" ? "active" : ""}`}
-            style={{ padding: "8px 16px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px" }}
-          >
-            <ArrowDownRight size={16} color="var(--cyan-400)" />
-            <span>Penjualan ({revenuesList.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveSubTab("capital")}
-            className={`tab-btn ${activeSubTab === "capital" ? "active" : ""}`}
-            style={{ padding: "8px 16px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px" }}
-          >
-            <Wallet size={16} color="var(--purple-400)" />
-            <span>Setoran Modal ({capitalList.length})</span>
+            <span className="badge badge-cyan" style={{ fontSize: "11px", padding: "1px 6px" }}>
+              {capitalList.length + revenuesList.length + ledgerExpensesList.length}
+            </span>
           </button>
         </div>
 
-        {/* Right Action Buttons */}
+        {/* Right: Contextual Action & Dedicated Export Buttons */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          {/* Export Buttons (Separated data based on active subtab) */}
           <button
             className="btn btn-secondary"
-            onClick={() => exportProjectToCSV(project, config)}
-            title="Ekspor CSV"
-            style={{ fontSize: "12px", padding: "6px 12px" }}
+            onClick={() =>
+              activeSubTab === "materials"
+                ? exportMaterialsToCSV(project, config)
+                : exportCashLedgerToCSV(project, config)
+            }
+            title={activeSubTab === "materials" ? "Ekspor CSV Pembelian Bahan" : "Ekspor CSV Buku Kas"}
+            style={{ fontSize: "12px", padding: "7px 12px", display: "inline-flex", alignItems: "center", gap: "6px" }}
           >
             <FileText size={15} color="var(--cyan-400)" />
             <span>CSV</span>
@@ -366,40 +369,49 @@ export function FinancialLedger({ project }) {
 
           <button
             className="btn btn-secondary"
-            onClick={() => exportProjectToXLSX(project, config)}
-            title="Ekspor Excel Multi-Sheet (.xlsx)"
-            style={{ fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(16, 185, 129, 0.4)" }}
+            onClick={() =>
+              activeSubTab === "materials"
+                ? exportMaterialsToXLSX(project, config)
+                : exportCashLedgerToXLSX(project, config)
+            }
+            title={activeSubTab === "materials" ? "Ekspor Excel Pembelian Bahan (.xlsx)" : "Ekspor Excel Buku Kas (.xlsx)"}
+            style={{ fontSize: "12px", padding: "7px 14px", border: "1px solid rgba(16, 185, 129, 0.4)", display: "inline-flex", alignItems: "center", gap: "6px" }}
           >
             <FileSpreadsheet size={15} color="var(--emerald-400)" />
-            <span style={{ color: "var(--emerald-400)" }}>Excel (XLSX)</span>
+            <span style={{ color: "var(--emerald-400)", fontWeight: "600" }}>Excel (XLSX)</span>
           </button>
 
-          <button
-            className="btn btn-secondary"
-            onClick={() => handleOpenAddCash("capital")}
-            style={{ fontSize: "12px", padding: "6px 12px" }}
-          >
-            <PlusCircle size={15} color="var(--purple-400)" />
-            <span>Setoran Modal</span>
-          </button>
+          {/* Contextual Action Buttons */}
+          {activeSubTab === "materials" ? (
+            <button
+              className="btn btn-amber"
+              onClick={handleOpenAddMaterial}
+              style={{ fontSize: "13px", padding: "7px 16px", display: "inline-flex", alignItems: "center", gap: "7px", boxShadow: "0 2px 10px rgba(245, 158, 11, 0.25)" }}
+            >
+              <PlusCircle size={16} />
+              <span style={{ fontWeight: "700" }}>Catat Pembelian Bahan</span>
+            </button>
+          ) : (
+            <>
+              <button
+                className="btn btn-secondary"
+                onClick={() => handleOpenAddCash("capital")}
+                style={{ fontSize: "12px", padding: "7px 13px", display: "inline-flex", alignItems: "center", gap: "6px", border: "1px solid rgba(168, 85, 247, 0.3)" }}
+              >
+                <PlusCircle size={15} color="var(--purple-400)" />
+                <span style={{ color: "var(--purple-300)", fontWeight: "600" }}>Setoran Modal</span>
+              </button>
 
-          <button
-            className="btn btn-secondary"
-            onClick={() => handleOpenAddCash("revenues")}
-            style={{ fontSize: "12px", padding: "6px 12px" }}
-          >
-            <PlusCircle size={15} color="var(--cyan-400)" />
-            <span>Penjualan</span>
-          </button>
-
-          <button
-            className="btn btn-amber"
-            onClick={handleOpenAddMaterial}
-            style={{ fontSize: "12px", padding: "6px 14px" }}
-          >
-            <PlusCircle size={15} />
-            <span>Catat Pembelian Bahan</span>
-          </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => handleOpenAddCash("revenues")}
+                style={{ fontSize: "12px", padding: "7px 13px", display: "inline-flex", alignItems: "center", gap: "6px", border: "1px solid rgba(6, 182, 212, 0.3)" }}
+              >
+                <PlusCircle size={15} color="var(--cyan-400)" />
+                <span style={{ color: "var(--cyan-300)", fontWeight: "600" }}>Catat Penjualan (Omset)</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
