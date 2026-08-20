@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   BookOpen,
   PlusCircle,
@@ -17,6 +18,7 @@ export function RecipeEditorModal({ isOpen, onClose, initialRecipe = null, onSav
   const { addRecipe, updateRecipe } = useProjects();
 
   const isEditing = Boolean(initialRecipe?.id);
+  const [deleteSpliceTarget, setDeleteSpliceTarget] = useState(null);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -360,7 +362,13 @@ export function RecipeEditorModal({ isOpen, onClose, initialRecipe = null, onSav
                       {splices.length > 1 && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveSpliceRow(splice.id)}
+                          onClick={() => {
+                            if (splice.itemA || splice.itemB || splice.result) {
+                              setDeleteSpliceTarget(splice);
+                            } else {
+                              handleRemoveSpliceRow(splice.id);
+                            }
+                          }}
                           className="btn-icon"
                           title="Hapus Langkah Ini"
                           style={{ color: "var(--rose-400)" }}
@@ -436,6 +444,21 @@ export function RecipeEditorModal({ isOpen, onClose, initialRecipe = null, onSav
           </div>
         </form>
       </div>
+
+      {/* Delete Splice Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteSpliceTarget)}
+        onClose={() => setDeleteSpliceTarget(null)}
+        onConfirm={() => {
+          if (deleteSpliceTarget) {
+            handleRemoveSpliceRow(deleteSpliceTarget.id);
+            setDeleteSpliceTarget(null);
+          }
+        }}
+        title={`Hapus Langkah "${deleteSpliceTarget?.branch || "Splicing"}"?`}
+        message={`Apakah Anda yakin ingin menghapus langkah kombinasi ${deleteSpliceTarget?.itemA || "?"} + ${deleteSpliceTarget?.itemB || "?"} → ${deleteSpliceTarget?.result || "?"}?`}
+        confirmText="Hapus Langkah"
+      />
     </div>
   );
 }

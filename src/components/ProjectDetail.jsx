@@ -6,6 +6,7 @@ import { StageTracker } from "./StageTracker";
 import { SplicingTree } from "./SplicingTree";
 import { formatStatusKey, formatStatusLabel } from "../utils/statusUtils";
 import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   ArrowLeft,
   GitFork,
@@ -31,6 +32,7 @@ export function ProjectDetail({ onBack }) {
   const [titleInput, setTitleInput] = useState("");
   const [notesInput, setNotesInput] = useState("");
   const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   if (!activeProject) {
     return (
@@ -71,10 +73,12 @@ export function ProjectDetail({ onBack }) {
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Yakin ingin menghapus projek "${activeProject.name}"? Seluruh data pembelian bahan dan buku kas akan dihapus.`)) {
-      deleteProject(activeProject.id);
-      onBack();
-    }
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteProject(activeProject.id);
+    onBack();
   };
 
   return (
@@ -333,6 +337,16 @@ export function ProjectDetail({ onBack }) {
       {activeTab === "ledger" && <FinancialLedger project={activeProject} />}
       {activeTab === "stages" && <StageTracker project={activeProject} />}
       {activeTab === "tree" && <SplicingTree project={activeProject} />}
+
+      {/* Delete Project Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title={`Hapus Projek "${activeProject.name}"?`}
+        message="Apakah Anda yakin ingin menghapus projek massing ini? Seluruh data pembelian bahan, rekapan buku kas, dan catatan tahapan akan dihapus secara permanen."
+        confirmText="Hapus Projek Ini"
+      />
     </div>
   );
 }

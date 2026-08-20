@@ -3,6 +3,7 @@ import { useProjects } from "../context/ProjectContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
 import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculator";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   GitFork,
   Plus,
@@ -25,6 +26,7 @@ export function SplicingTree({ project }) {
   const { config, formatLocks, formatIDR, wlToIdr } = useCurrency();
   const [showAddSpliceModal, setShowAddSpliceModal] = useState(false);
   const [editingSpliceId, setEditingSpliceId] = useState(null);
+  const [deleteSpliceTarget, setDeleteSpliceTarget] = useState(null);
 
   // Form State
   const [selectedBranch, setSelectedBranch] = useState("1. Membuat Kaktus");
@@ -408,7 +410,7 @@ export function SplicingTree({ project }) {
                         <button className="btn-icon" onClick={() => handleOpenEdit(sp)} title="Edit Jumlah, Harga & Resep">
                           <Edit2 size={13} />
                         </button>
-                        <button className="btn-icon" onClick={() => handleDeleteSplice(sp.id)} title="Hapus Resep" style={{ color: "var(--rose-400)" }}>
+                        <button className="btn-icon" onClick={() => setDeleteSpliceTarget(sp)} title="Hapus Resep" style={{ color: "var(--rose-400)" }}>
                           <Trash2 size={13} />
                         </button>
                       </div>
@@ -810,6 +812,21 @@ export function SplicingTree({ project }) {
           </div>
         </div>
       )}
+
+      {/* Delete Splice Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteSpliceTarget)}
+        onClose={() => setDeleteSpliceTarget(null)}
+        onConfirm={() => {
+          if (deleteSpliceTarget) {
+            handleDeleteSplice(deleteSpliceTarget.id);
+            setDeleteSpliceTarget(null);
+          }
+        }}
+        title={`Hapus Langkah Splicing: ${deleteSpliceTarget?.result}?`}
+        message={`Apakah Anda yakin ingin menghapus langkah kombinasi ${deleteSpliceTarget?.itemA} + ${deleteSpliceTarget?.itemB} -> ${deleteSpliceTarget?.result}?`}
+        confirmText="Hapus Langkah"
+      />
     </div>
   );
 }

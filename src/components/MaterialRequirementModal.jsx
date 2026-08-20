@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { ItemAutocomplete } from "./ItemAutocomplete";
 import { generateDefaultRequirementsFromProject } from "../utils/materialRequirementUtils";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   Target,
   Plus,
@@ -17,6 +18,7 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
 
   const [requirements, setRequirements] = useState([]);
   const [successMsg, setSuccessMsg] = useState("");
+  const [deleteRowTarget, setDeleteRowTarget] = useState(null);
 
   useEffect(() => {
     if (isOpen && project) {
@@ -234,7 +236,13 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
                   <div style={{ paddingTop: "16px" }}>
                     <button
                       type="button"
-                      onClick={() => handleRemoveRow(req.id)}
+                      onClick={() => {
+                        if (req.name && req.name.trim()) {
+                          setDeleteRowTarget(req);
+                        } else {
+                          handleRemoveRow(req.id);
+                        }
+                      }}
                       className="btn-icon"
                       title="Hapus Target Bahan Ini"
                       style={{ color: "var(--rose-400)" }}
@@ -274,6 +282,21 @@ export function MaterialRequirementModal({ isOpen, onClose, project }) {
           </div>
         </form>
       </div>
+
+      {/* Delete Row Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteRowTarget)}
+        onClose={() => setDeleteRowTarget(null)}
+        onConfirm={() => {
+          if (deleteRowTarget) {
+            handleRemoveRow(deleteRowTarget.id);
+            setDeleteRowTarget(null);
+          }
+        }}
+        title={`Hapus Target Bahan "${deleteRowTarget?.name}"?`}
+        message={`Apakah Anda yakin ingin menghapus target kebutuhan bahan "${deleteRowTarget?.name}" (${Number(deleteRowTarget?.targetQuantity || 0).toLocaleString()} qty)?`}
+        confirmText="Hapus Target"
+      />
     </div>
   );
 }

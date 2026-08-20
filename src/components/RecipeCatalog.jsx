@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { RecipeEditorModal } from "./RecipeEditorModal";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   BookOpen,
   Search,
@@ -23,6 +24,7 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditorModal, setShowEditorModal] = useState(false);
   const [recipeToEdit, setRecipeToEdit] = useState(null);
+  const [deleteRecipeTarget, setDeleteRecipeTarget] = useState(null);
 
   // Filter recipes based on search query
   const filteredRecipes = useMemo(() => {
@@ -214,7 +216,7 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
                         <button
                           type="button"
                           className="btn-icon"
-                          onClick={() => handleDelete(activeRecipe.id, activeRecipe.name)}
+                          onClick={() => setDeleteRecipeTarget(activeRecipe)}
                           style={{ color: "var(--rose-400)", padding: "6px" }}
                           title="Hapus Resep"
                         >
@@ -397,6 +399,21 @@ export function RecipeCatalog({ isOpen, onClose, onStartProjectFromRecipe }) {
         onClose={() => setShowEditorModal(false)}
         initialRecipe={recipeToEdit}
         onSaveSuccess={handleSaveSuccess}
+      />
+
+      {/* Delete Recipe Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteRecipeTarget)}
+        onClose={() => setDeleteRecipeTarget(null)}
+        onConfirm={() => {
+          if (deleteRecipeTarget) {
+            deleteRecipe(deleteRecipeTarget.id);
+            setDeleteRecipeTarget(null);
+          }
+        }}
+        title={`Hapus Resep "${deleteRecipeTarget?.name}"?`}
+        message={`Apakah Anda yakin ingin menghapus resep "${deleteRecipeTarget?.name}" dari katalog resep Anda?`}
+        confirmText="Hapus Resep"
       />
     </>
   );

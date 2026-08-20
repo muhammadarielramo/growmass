@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { formatSeconds } from "../utils/recipeCalculator";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   Clock,
   Plus,
@@ -16,6 +17,7 @@ export function GrowthTimers({ project }) {
   const { addTimer, deleteTimer } = useProjects();
   const [showAddModal, setShowAddModal] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [deleteTimerTarget, setDeleteTimerTarget] = useState(null);
 
   // Form state
   const [timerLabel, setTimerLabel] = useState("");
@@ -133,7 +135,7 @@ export function GrowthTimers({ project }) {
 
                     <button
                       className="btn-icon"
-                      onClick={() => deleteTimer(project.id, timer.id)}
+                      onClick={() => setDeleteTimerTarget(timer)}
                       title="Hapus Timer"
                       style={{ color: "var(--rose-400)" }}
                     >
@@ -306,6 +308,21 @@ export function GrowthTimers({ project }) {
           </div>
         </div>
       )}
+
+      {/* Delete Timer Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteTimerTarget)}
+        onClose={() => setDeleteTimerTarget(null)}
+        onConfirm={() => {
+          if (deleteTimerTarget) {
+            deleteTimer(project.id, deleteTimerTarget.id);
+            setDeleteTimerTarget(null);
+          }
+        }}
+        title={`Hapus Timer "${deleteTimerTarget?.label}"?`}
+        message={`Apakah Anda yakin ingin menghapus timer untuk ${deleteTimerTarget?.label} di world ${deleteTimerTarget?.worldName}?`}
+        confirmText="Hapus Timer"
+      />
     </div>
   );
 }

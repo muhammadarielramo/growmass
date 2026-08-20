@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useProjects } from "../context/ProjectContext";
 import { formatDateGMT7 } from "../utils/dateUtils";
+import { ConfirmModal } from "./ConfirmModal";
 import confetti from "canvas-confetti";
 import {
   CheckCircle2,
@@ -26,6 +27,7 @@ export function StageTracker({ project }) {
   const [editDesc, setEditDesc] = useState("");
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [noteText, setNoteText] = useState("");
+  const [deleteStageTarget, setDeleteStageTarget] = useState(null);
 
   const stages = project.stages || [];
   const completedCount = stages.filter((s) => s.completed).length;
@@ -285,7 +287,7 @@ export function StageTracker({ project }) {
                     </button>
                     <button
                       className="btn-icon"
-                      onClick={() => deleteStage(project.id, stage.id)}
+                      onClick={() => setDeleteStageTarget(stage)}
                       title="Hapus Tahap"
                       style={{ color: "var(--rose-400)" }}
                     >
@@ -330,6 +332,21 @@ export function StageTracker({ project }) {
           );
         })}
       </div>
+
+      {/* Delete Stage Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteStageTarget)}
+        onClose={() => setDeleteStageTarget(null)}
+        onConfirm={() => {
+          if (deleteStageTarget) {
+            deleteStage(project.id, deleteStageTarget.id);
+            setDeleteStageTarget(null);
+          }
+        }}
+        title={`Hapus Tahap "${deleteStageTarget?.title}"?`}
+        message={`Apakah Anda yakin ingin menghapus tahapan checklist "${deleteStageTarget?.title}"?`}
+        confirmText="Hapus Tahap"
+      />
     </div>
   );
 }

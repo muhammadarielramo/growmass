@@ -6,6 +6,7 @@ import { calculatePurchaseCost, RATE_TYPES } from "../utils/currencyRateCalculat
 import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import { getTodayGMT7, formatDateGMT7 } from "../utils/dateUtils";
 import { MaterialShortageTracker } from "./MaterialShortageTracker";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   Wallet,
   TrendingUp,
@@ -39,6 +40,7 @@ export function FinancialLedger({ project }) {
   const { config, formatLocks, formatIDR, wlToIdr, idrToWl, calculateROI } = useCurrency();
 
   const [activeSubTab, setActiveSubTab] = useState("materials"); // 'materials', 'all_cash', 'capital', 'revenues'
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   // Modals
   const [showMaterialModal, setShowMaterialModal] = useState(false);
@@ -469,7 +471,7 @@ export function FinancialLedger({ project }) {
                         </button>
                         <button
                           className="btn-icon"
-                          onClick={() => deleteMaterial(project.id, mat.id)}
+                          onClick={() => setDeleteTarget({ type: "material", data: mat })}
                           title="Hapus Bahan"
                           style={{ color: "var(--rose-400)" }}
                         >
@@ -517,14 +519,14 @@ export function FinancialLedger({ project }) {
           <table className="custom-table">
             <thead>
               <tr>
-                <th style={{ width: "40px" }}>Tipe</th>
-                <th>Tanggal (GMT+7)</th>
-                <th>Keterangan Transaksi</th>
+                <th style={{ width: "90px" }}>Tipe</th>
+                <th style={{ width: "110px" }}>Tanggal</th>
+                <th>Keterangan / Catatan</th>
                 <th>Kategori</th>
-                <th style={{ textAlign: "right" }}>Jumlah</th>
-                <th style={{ textAlign: "right" }}>Nominal (WL)</th>
+                <th style={{ textAlign: "right" }}>Jumlah (Qty)</th>
+                <th style={{ textAlign: "right" }}>Nominal (Locks)</th>
                 <th style={{ textAlign: "right" }}>Estimasi Rupiah</th>
-                <th style={{ textAlign: "right", width: "70px" }}>Aksi</th>
+                <th style={{ textAlign: "right", width: "80px" }}>Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -554,7 +556,7 @@ export function FinancialLedger({ project }) {
                     <td style={{ textAlign: "right" }}>
                       <button
                         className="btn-icon"
-                        onClick={() => deleteLedgerEntry(project.id, "capital", entry.id)}
+                        onClick={() => setDeleteTarget({ type: "ledger", ledgerType: "capital", data: entry })}
                         title="Hapus"
                         style={{ color: "var(--rose-400)" }}
                       >
@@ -592,7 +594,7 @@ export function FinancialLedger({ project }) {
                     <td style={{ textAlign: "right" }}>
                       <button
                         className="btn-icon"
-                        onClick={() => deleteLedgerEntry(project.id, "revenues", entry.id)}
+                        onClick={() => setDeleteTarget({ type: "ledger", ledgerType: "revenues", data: entry })}
                         title="Hapus"
                         style={{ color: "var(--rose-400)" }}
                       >
@@ -630,7 +632,7 @@ export function FinancialLedger({ project }) {
                     <td style={{ textAlign: "right" }}>
                       <button
                         className="btn-icon"
-                        onClick={() => deleteLedgerEntry(project.id, "expenses", entry.id)}
+                        onClick={() => setDeleteTarget({ type: "ledger", ledgerType: "expenses", data: entry })}
                         title="Hapus"
                         style={{ color: "var(--rose-400)" }}
                       >
@@ -892,6 +894,32 @@ export function FinancialLedger({ project }) {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          if (deleteTarget.type === "material") {
+            deleteMaterial(project.id, deleteTarget.data.id);
+          } else if (deleteTarget.type === "ledger") {
+            deleteLedgerEntry(project.id, deleteTarget.ledgerType, deleteTarget.data.id);
+          }
+          setDeleteTarget(null);
+        }}
+        title={
+          deleteTarget?.type === "material"
+            ? `Hapus Pembelian "${deleteTarget?.data?.name}"?`
+            : `Hapus Transaksi "${deleteTarget?.data?.note}"?`
+        }
+        message={
+          deleteTarget?.type === "material"
+            ? `Apakah Anda yakin ingin menghapus data pembelian ${deleteTarget?.data?.name}? Total pengeluaran projek akan otomatis diperbarui.`
+            : `Apakah Anda yakin ingin menghapus catatan transaksi ini senilai ${formatLocks(deleteTarget?.data?.amountWL || 0)}? Saldo dan laba bersih akan disesuaikan otomatis.`
+        }
+        confirmText="Hapus Data"
+      />
     </div>
   );
 }

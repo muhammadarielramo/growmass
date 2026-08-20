@@ -6,6 +6,7 @@ import { exportProjectToXLSX, exportProjectToCSV } from "../utils/exportUtils";
 import { getTodayGMT7, formatDateGMT7 } from "../utils/dateUtils";
 import { ItemAutocomplete } from "./ItemAutocomplete";
 import { MaterialShortageTracker } from "./MaterialShortageTracker";
+import { ConfirmModal } from "./ConfirmModal";
 import {
   Package,
   PlusCircle,
@@ -29,6 +30,7 @@ export function MaterialPurchases({ project }) {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingMatId, setEditingMatId] = useState(null);
+  const [deleteTargetMat, setDeleteTargetMat] = useState(null);
 
   // Form State
   const [name, setName] = useState("");
@@ -245,7 +247,7 @@ export function MaterialPurchases({ project }) {
                       </button>
                       <button
                         className="btn-icon"
-                        onClick={() => deleteMaterial(project.id, mat.id)}
+                        onClick={() => setDeleteTargetMat(mat)}
                         title="Hapus Bahan"
                         style={{ color: "var(--rose-400)" }}
                       >
@@ -436,6 +438,21 @@ export function MaterialPurchases({ project }) {
           </div>
         </div>
       )}
+
+      {/* Delete Material Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(deleteTargetMat)}
+        onClose={() => setDeleteTargetMat(null)}
+        onConfirm={() => {
+          if (deleteTargetMat) {
+            deleteMaterial(project.id, deleteTargetMat.id);
+            setDeleteTargetMat(null);
+          }
+        }}
+        title={`Hapus Pembelian "${deleteTargetMat?.name}"?`}
+        message={`Apakah Anda yakin ingin menghapus data pembelian ${deleteTargetMat?.name} (${Number(deleteTargetMat?.quantity || 0).toLocaleString()} qty)? Biaya belanja akan otomatis dikurangkan dari total pengeluaran projek.`}
+        confirmText="Hapus Pembelian"
+      />
     </div>
   );
 }
